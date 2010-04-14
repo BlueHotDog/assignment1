@@ -5,8 +5,8 @@
  * Created on March 26, 2010, 4:40 PM
  */
 
-#include "yd_threads.h"
-
+#include "ydThreads.h"
+#include "fileHandler.h"
 void a()
 {
     int i;
@@ -52,7 +52,14 @@ int main()
       printf(">");
       scanf("%s",command);
       if(strcmp(command,"run")==0 || strcmp(command,"load") == 0)
+      {
               scanf("%s",parameter);
+              if(strcmp(command,"run"))
+              {
+                  readFile(parameter,NULL,NULL,NULL,NULL);
+              }
+      }
+
       else if(strcmp(command,"exit")!=0)
           break;
   }

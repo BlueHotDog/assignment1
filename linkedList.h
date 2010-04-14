@@ -26,7 +26,7 @@ op_status list_insert_after(node_t_p node, void* data);
 node_t_p list_create(void* data);
 op_status list_add_last (node_t_p list, void* data);
 op_status list_add_last_rec (node_t_p list, void* data);
-bool list_is_empty (node_t_p list);
+boolean list_is_empty (node_t_p list);
 
 #endif	/* _LINKEDLIST_H */
 
