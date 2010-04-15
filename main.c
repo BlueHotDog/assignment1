@@ -9,7 +9,7 @@
 #include "fileHandler.h"
 void a()
 {
-    int i;
+    int i;//hhh
     for (i = 0; i < 10; i++)
     {
         printf("a");
