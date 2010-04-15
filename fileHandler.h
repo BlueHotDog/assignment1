@@ -7,6 +7,7 @@
 #ifndef _FILEHANDLER_H
 #define	_FILEHANDLER_H
 #include "jobs.h"
+#define LINE_LENGTH 1000
 /*
  * Reads the input file,
  * file name - file in current directory
@@ -23,6 +24,7 @@ int readJobsAmount(string line);
 boolean* readJobsDeps(string line,tID jobID);
 //reads the job and thread connection
 ThreadJobs readThead(string line);
+
 
 
 
