@@ -43,7 +43,7 @@ void c()
 
 int main()
 {
-  TestReadFile();
+  TestReadFile();//jjjjjjjjjj
 /*
   string command = malloc(MAX_INPUT_LENGTH);
   string parameter = malloc(MAX_INPUT_LENGTH);
@@ -80,6 +80,7 @@ int main()
 int TestReadFile()
 {
     int threads = 0;
+    int b=44;
     Jobs jobs;
     JobsDeps deps;
     JobsForThreads jobsForThreads;
