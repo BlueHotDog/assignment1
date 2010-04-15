@@ -80,7 +80,9 @@ int main()
 int TestReadFile()
 {
     int threads = 0;
-    Jobs* jobs;
-    readFile("/home/danni/test",NULL,jobs,NULL,&threads);
+    Jobs jobs;
+    JobsDeps deps;
+    JobsForThreads jobsForThreads;
+    readFile("/home/danni/test",&deps,&jobs,&jobsForThreads,&threads);
 }
 

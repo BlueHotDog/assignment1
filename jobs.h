@@ -17,9 +17,9 @@ typedef enum JobState
 
 typedef struct sThreadJobs
 {
-    int jobsAmount;
-    tID threadID;
-    tID* jobs;
+    int jobsAmount; //total number of jobs
+    tID threadID; //identifier
+    int* jobs; //what jobs are assigned to this thread
 } ThreadJobs,*pThreadJobs;
 
 typedef JobState* Jobs;
@@ -33,9 +33,6 @@ boolean hasPendingJobs(tID threadId, JobsForThreads* jft, Jobs* jobsStatus);
  * return next job for thread.
  */
 tID getJobForThread(tID threadId, JobsForThreads* jft, Jobs* jobsStatus);
-
-
-
 
 #endif	/* _JOBS_H */
 
