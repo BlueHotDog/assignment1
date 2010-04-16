@@ -80,7 +80,6 @@ int main()
 int TestReadFile()
 {
     int threads = 0;
-    int b=44;
     Jobs jobs;
     JobsDeps deps;
     JobsForThreads jobsForThreads;
