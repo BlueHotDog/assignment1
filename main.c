@@ -43,8 +43,6 @@ void c()
 
 int main()
 {
-  TestReadFile();//jjjjjjjjjj
-/*
   string command = malloc(MAX_INPUT_LENGTH);
   string parameter = malloc(MAX_INPUT_LENGTH);
 
@@ -57,14 +55,17 @@ int main()
               scanf("%s",parameter);
               if(strcmp(command,"run"))
               {
-                  readFile(parameter,NULL,NULL,NULL,NULL);
+                    int threads = 0;
+                    Jobs jobs;
+                    JobsDeps deps;
+                    JobsForThreads jobsForThreads;
+                    readFile(parameter,&deps,&jobs,&jobsForThreads,&threads);
               }
       }
-
       else if(strcmp(command,"exit")!=0)
           break;
   }
-*/
+
 /*
   thread_manager_init(0);
   create_thread(a, 0);
@@ -81,7 +82,6 @@ int TestReadFile()
 {
     int threads = 0;
     Jobs jobs;
-	int b=55;
     JobsDeps deps;
     JobsForThreads jobsForThreads;
     readFile("/home/danni/test",&deps,&jobs,&jobsForThreads,&threads);
