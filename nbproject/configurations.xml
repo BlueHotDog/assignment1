@@ -18,6 +18,7 @@
                    displayName="Source Files"
                    projectFiles="true">
       <itemPath>fileHandler.c</itemPath>
+      <itemPath>jobs.c</itemPath>
       <itemPath>linkedList.c</itemPath>
       <itemPath>main.c</itemPath>
       <itemPath>ydThreads.c</itemPath>

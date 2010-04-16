@@ -33,6 +33,7 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/fileHandler.o \
 	${OBJECTDIR}/linkedList.o \
+	${OBJECTDIR}/jobs.o \
 	${OBJECTDIR}/ydThreads.o \
 	${OBJECTDIR}/main.o
 
@@ -69,6 +70,11 @@ ${OBJECTDIR}/linkedList.o: nbproject/Makefile-${CND_CONF}.mk linkedList.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/linkedList.o linkedList.c
+
+${OBJECTDIR}/jobs.o: nbproject/Makefile-${CND_CONF}.mk jobs.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/jobs.o jobs.c
 
 ${OBJECTDIR}/ydThreads.o: nbproject/Makefile-${CND_CONF}.mk ydThreads.c 
 	${MKDIR} -p ${OBJECTDIR}

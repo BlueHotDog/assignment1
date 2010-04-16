@@ -17,22 +17,30 @@ typedef enum JobState
 
 typedef struct sThreadJobs
 {
-    int jobsAmount; //total number of jobs
-    tID threadID; //identifier
-    int* jobs; //what jobs are assigned to this thread
+    int jobsAmount;
+    tID threadID;
+    tID* jobs;
 } ThreadJobs,*pThreadJobs;
 
 typedef JobState* Jobs;
 typedef boolean** JobsDeps; //dependencies between jobs, the graph matrix
 typedef ThreadJobs* JobsForThreads; //relation between the threads and the jobs
 
-
-boolean hasPendingJobs(tID threadId, JobsForThreads* jft, Jobs* jobsStatus);
+boolean hasPendingJobs (tID threadId, JobsForThreads jft, Jobs jobsStatus);
 
 /*
  * return next job for thread.
  */
-tID getJobForThread(tID threadId, JobsForThreads* jft, Jobs* jobsStatus);
+tID getJobForThread (tID threadId, JobsForThreads jft, Jobs jobsStatus, JobsDeps jobsDeps);
+
+/*
+ * this is the threads main function.
+ */
+void runThread();
+
+static JobsForThreads jobsForThreads;
+static Jobs jobsStatus;
+static JobsDeps jobsDeps;
 
 #endif	/* _JOBS_H */
 

@@ -32,9 +32,7 @@ typedef char* string;
 #define DEBUG 1
 #define MAX_INPUT_LENGTH 50
 #define NULL ((void *)0)
-
-#define ASSERT_ALWAYS(expr) /
-
+#define NULL_TID -1
 
 #endif	/* _GLOBALDEFS_H */
 

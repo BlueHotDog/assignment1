@@ -6,6 +6,7 @@
  */
 #ifndef _FILEHANDLER_H
 #define	_FILEHANDLER_H
+
 #include "jobs.h"
 #define LINE_LENGTH 1000
 #define GET_NEXT_LINE(aLine,aFile) {\
@@ -20,6 +21,7 @@
     };\
     aFoundChar,p=NULL;\
 }
+
 #define GET_NEXT_CHAR(aChar,aLine) {\
     boolean aFoundChar = False;\
     while (!aFoundChar) {\
