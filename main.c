@@ -81,6 +81,7 @@ int TestReadFile()
 {
     int threads = 0;
     Jobs jobs;
+	int b=55;
     JobsDeps deps;
     JobsForThreads jobsForThreads;
     readFile("/home/danni/test",&deps,&jobs,&jobsForThreads,&threads);
