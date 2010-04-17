@@ -11,6 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 typedef int tID;
 typedef enum op_status {
@@ -33,6 +34,8 @@ typedef char* string;
 #define MAX_INPUT_LENGTH 50
 #define NULL ((void *)0)
 #define NULL_TID -1
+#define OUT
+#define IN
 
 #endif	/* _GLOBALDEFS_H */
 

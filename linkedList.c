@@ -72,6 +72,7 @@ int list_foreach(node_t_p node, int(*func)(void*)) {
 }
 
 node_t_p list_find(node_t_p node, int(*func)(void*,void*), void *data) {
+    //TODO:not working correctly
 	while(node) {
 		if(func(node->data, data)>0) return node;
 		node=node->next;

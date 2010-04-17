@@ -82,6 +82,7 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
         //===========================================
         fclose(hFile);
     }
+    return OP_SUCCESS;
 }
 
 int readThreadAmount(string line) {

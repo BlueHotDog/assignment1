@@ -8,6 +8,7 @@
       <itemPath>globalDefs.h</itemPath>
       <itemPath>jobs.h</itemPath>
       <itemPath>linkedList.h</itemPath>
+      <itemPath>tests.h</itemPath>
       <itemPath>ydThreads.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
@@ -21,6 +22,7 @@
       <itemPath>jobs.c</itemPath>
       <itemPath>linkedList.c</itemPath>
       <itemPath>main.c</itemPath>
+      <itemPath>tests.c</itemPath>
       <itemPath>ydThreads.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"

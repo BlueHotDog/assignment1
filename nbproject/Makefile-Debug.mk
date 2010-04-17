@@ -31,11 +31,12 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/fileHandler.o \
 	${OBJECTDIR}/linkedList.o \
+	${OBJECTDIR}/fileHandler.o \
 	${OBJECTDIR}/jobs.o \
+	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/ydThreads.o \
-	${OBJECTDIR}/main.o
+	${OBJECTDIR}/tests.o
 
 # C Compiler Flags
 CFLAGS=
@@ -61,30 +62,35 @@ dist/Debug/GNU-Linux-x86/assignment1: ${OBJECTFILES}
 	${MKDIR} -p dist/Debug/GNU-Linux-x86
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/assignment1 ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/fileHandler.o: nbproject/Makefile-${CND_CONF}.mk fileHandler.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -g -Werror -MMD -MP -MF $@.d -o ${OBJECTDIR}/fileHandler.o fileHandler.c
-
 ${OBJECTDIR}/linkedList.o: nbproject/Makefile-${CND_CONF}.mk linkedList.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -g -Werror -MMD -MP -MF $@.d -o ${OBJECTDIR}/linkedList.o linkedList.c
+
+${OBJECTDIR}/fileHandler.o: nbproject/Makefile-${CND_CONF}.mk fileHandler.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -Werror -MMD -MP -MF $@.d -o ${OBJECTDIR}/fileHandler.o fileHandler.c
 
 ${OBJECTDIR}/jobs.o: nbproject/Makefile-${CND_CONF}.mk jobs.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -g -Werror -MMD -MP -MF $@.d -o ${OBJECTDIR}/jobs.o jobs.c
 
+${OBJECTDIR}/main.o: nbproject/Makefile-${CND_CONF}.mk main.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -g -Werror -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.c
+
 ${OBJECTDIR}/ydThreads.o: nbproject/Makefile-${CND_CONF}.mk ydThreads.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -g -Werror -MMD -MP -MF $@.d -o ${OBJECTDIR}/ydThreads.o ydThreads.c
 
-${OBJECTDIR}/main.o: nbproject/Makefile-${CND_CONF}.mk main.c 
+${OBJECTDIR}/tests.o: nbproject/Makefile-${CND_CONF}.mk tests.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -g -Werror -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.c
+	$(COMPILE.c) -g -Werror -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests.o tests.c
 
 # Subprojects
 .build-subprojects:
