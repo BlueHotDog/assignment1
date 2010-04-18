@@ -8,7 +8,7 @@
 #include "ydThreads.h"
 #include "fileHandler.h"
 #include "jobs.h"
-
+//should be working..
 void runThread() {
     while (hasPendingJobs(current_thread->id-1)) {
         tID jobId = getJobForThread(current_thread->id-1);
