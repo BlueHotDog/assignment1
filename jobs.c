@@ -63,7 +63,7 @@ void printData()
     }
     printf("Jobs:\n");
     i=0;
-    for (i=0; jobs[i] != NULL; i++)
+    for (i=0; jobs[i] != 0; i++)
     {
         switch (jobs[i])
         {
@@ -85,7 +85,7 @@ void printData()
     for (i=0; i != threadsNumber; i++)
     {
         printf("jobsForThreads %d:\n\tJob Amount:%d\n\tThread ID: %d\n\tJobs: ",i ,jobsForThreads[i].jobsAmount, jobsForThreads[i].threadID);
-        for (j=0; jobsForThreads[i].jobs[j] != NULL; j++)
+        for (j=0; jobsForThreads[i].jobs[j] != 0; j++)
         {
             printf("%d ", jobsForThreads[i].jobs[j]);
         }

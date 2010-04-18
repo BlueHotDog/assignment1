@@ -36,6 +36,7 @@ typedef char* string;
 #define NULL_TID -1
 #define OUT
 #define IN
+#define NULL    ((void *)0)
 
 #endif	/* _GLOBALDEFS_H */
 

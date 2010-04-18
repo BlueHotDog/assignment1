@@ -35,7 +35,7 @@ typedef struct th_container_s {
     node_t_p stats;
 } th_container_t, *th_container_t_p;
 
-#define NULL    ((void *)0)
+
 
 /* save machine context */
 #define MCTX_SAVE(mctx) (void)getcontext(&(mctx)->uc)
