@@ -33,10 +33,9 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 OBJECTFILES= \
 	${OBJECTDIR}/fileHandler.o \
 	${OBJECTDIR}/linkedList.o \
-	${OBJECTDIR}/ydThreads.o \
-	${OBJECTDIR}/main.o \
 	${OBJECTDIR}/jobs.o \
-	${OBJECTDIR}/tests.o
+	${OBJECTDIR}/ydThreads.o \
+	${OBJECTDIR}/main.o
 
 # C Compiler Flags
 CFLAGS=
@@ -72,6 +71,11 @@ ${OBJECTDIR}/linkedList.o: nbproject/Makefile-${CND_CONF}.mk linkedList.c
 	${RM} $@.d
 	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/linkedList.o linkedList.c
 
+${OBJECTDIR}/jobs.o: nbproject/Makefile-${CND_CONF}.mk jobs.c 
+	${MKDIR} -p ${OBJECTDIR}
+	${RM} $@.d
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/jobs.o jobs.c
+
 ${OBJECTDIR}/ydThreads.o: nbproject/Makefile-${CND_CONF}.mk ydThreads.c 
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
@@ -81,16 +85,6 @@ ${OBJECTDIR}/main.o: nbproject/Makefile-${CND_CONF}.mk main.c
 	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
 	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.c
-
-${OBJECTDIR}/jobs.o: nbproject/Makefile-${CND_CONF}.mk jobs.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/jobs.o jobs.c
-
-${OBJECTDIR}/tests.o: nbproject/Makefile-${CND_CONF}.mk tests.c 
-	${MKDIR} -p ${OBJECTDIR}
-	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests.o tests.c
 
 # Subprojects
 .build-subprojects:

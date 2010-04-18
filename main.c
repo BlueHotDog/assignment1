@@ -7,6 +7,7 @@
 
 #include "ydThreads.h"
 #include "fileHandler.h"
+#include "jobs.h"
 
 void runThread() {
     while (hasPendingJobs(current_thread->id-1)) {

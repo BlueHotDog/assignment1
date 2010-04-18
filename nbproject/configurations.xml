@@ -6,7 +6,7 @@
                    projectFiles="true">
       <itemPath>fileHandler.h</itemPath>
       <itemPath>globalDefs.h</itemPath>
-      <itemPath>../../FromYaniv/jobs.h</itemPath>
+      <itemPath>jobs.h</itemPath>
       <itemPath>linkedList.h</itemPath>
       <itemPath>ydThreads.h</itemPath>
     </logicalFolder>
@@ -21,13 +21,11 @@
       <itemPath>jobs.c</itemPath>
       <itemPath>linkedList.c</itemPath>
       <itemPath>main.c</itemPath>
-      <itemPath>tests.c</itemPath>
       <itemPath>ydThreads.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
                    projectFiles="false">
-      <itemPath>Makefile</itemPath>
     </logicalFolder>
   </logicalFolder>
   <projectmakefile>Makefile</projectmakefile>
