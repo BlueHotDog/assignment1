@@ -11,7 +11,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <assert.h>
 
 typedef int tID;
 typedef enum op_status {
@@ -32,11 +31,22 @@ typedef char* string;
 //#define FALSE 0
 #define DEBUG 1
 #define MAX_INPUT_LENGTH 50
-#define NULL ((void *)0)
+//#define NULL ((void *)0)
 #define NULL_TID -1
 #define OUT
 #define IN
-#define NULL    ((void *)0)
+
+
+//DEBUGGING
+#ifdef DEBUG
+# define __ASSERT_VOID_CAST (void)
+# define assert(expr)							\
+  ((expr)								\
+   ? __ASSERT_VOID_CAST (0)						\
+   : printf("=========assertion failed on line:%d in file:%s\n",__LINE__,__FILE__))
+#else
+    # define assert(expr) ASSERT_VOID_CAST (0)
+#endif
 
 #endif	/* _GLOBALDEFS_H */
 

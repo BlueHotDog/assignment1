@@ -83,14 +83,17 @@ void manager() {
 
 void thread_manager_init(void* arg, ucontext_t* ret_thread) {
     if (DEBUG) printf("%s\n", "init manager thread");
-    manager_thread = malloc(sizeof (mctx_t));
-    current_thread = malloc(sizeof (mctx_t));
-    void* manager_stack = malloc(sizeof (char) * MAX_STACK_SIZE);
-    mctx_create(manager_thread, &manager, arg, manager_stack, (sizeof (char) * MAX_STACK_SIZE), ret_thread);
-    if (!container)
-        container = malloc(sizeof (th_container_t));
-
-    assert(container && manager_thread && current_thread && manager_stack);
+    if (!manager_thread && !current_thread) {
+        manager_thread = malloc(sizeof (mctx_t));
+        current_thread = malloc(sizeof (mctx_t));
+        assert(manager_thread && current_thread);
+        void* manager_stack = malloc(sizeof (char) * MAX_STACK_SIZE);
+        assert(manager_stack);
+        mctx_create(manager_thread, &manager, arg, manager_stack, (sizeof (char) * MAX_STACK_SIZE), ret_thread);
+        if (!container)
+            container = malloc(sizeof (th_container_t));
+    } else if (DEBUG) printf("manager thread already initialized\n");
+    assert(container && manager_thread && current_thread);
 }
 
 int create_thread(void (*sf_addr)(), void *sf_arg) {
@@ -234,7 +237,7 @@ int total_switch_wait() {
     node_t* node = container->stats;
     int total = 0;
     while (node) {
-        total+= THREAD_STATS(node)->max_switch_wait;
+        total += THREAD_STATS(node)->max_switch_wait;
         node = node->next;
     }
     return total;

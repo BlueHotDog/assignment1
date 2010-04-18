@@ -8,28 +8,16 @@
 #include "ydThreads.h"
 #include "fileHandler.h"
 
-void a() {
-    int i; //hhh
-    for (i = 0; i < 10; i++) {
-        printf("a\n");
-        thread_yield(0, 0);
-    }
-    thread_term();
-}
-
-void b() {
-    int i;
-    for (i = 0; i < 8; i++) {
-        printf("b\n");
-        thread_yield(0, 0);
-    }
-    thread_term();
-}
-
-void c() {
-    int i;
-    for (i = 0; i < 15; i++) {
-        printf("c\n");
+void runThread() {
+    while (hasPendingJobs(current_thread->id-1)) {
+        tID jobId = getJobForThread(current_thread->id-1);
+        if (jobId != NULL_TID)
+        {
+            execJob(jobId);
+        }
+        else {
+            if (DEBUG) printf("Thread %d will wait because there is no free job for him to execute\n", current_thread->id-1);
+        }
         thread_yield(0, 0);
     }
     thread_term();
@@ -49,22 +37,13 @@ mctx_t_p create_ui_thread(void* ui_func) {
 void ui() {
     string command = malloc(MAX_INPUT_LENGTH);
     string parameter = malloc(MAX_INPUT_LENGTH);
-    create_thread(a, 0);
-    create_thread(b, 0);
-    create_thread(c, 0);
-    threads_start_with_ui(ui_thread);
+
     while (strcmp(command, "exit") != 0) {
         printf(">");
         scanf("%s", command);
-        if (strcmp(command, "run") == 0 || strcmp(command, "load") == 0 || strcmp(command, "SW") == 0) {
+        if (strcmp(command, "load") == 0 || strcmp(command, "SW") == 0) {
             scanf("%s", parameter);
-            if (strcmp(command, "run") == 0) {
-                int threads = 0;
-                Jobs jobs;
-                JobsDeps deps;
-                JobsForThreads jobsForThreads;
-                readFile(parameter, &deps, &jobs, &jobsForThreads, &threads);
-            } else if (strcmp(command, "SW") == 0) {
+            if (strcmp(command, "SW") == 0) { //=============================SW==================================
                 int threadNumber = 0;
                 sscanf(parameter, "%d", &threadNumber);
                 int waitAmount = switches_wait(threadNumber);
@@ -72,19 +51,31 @@ void ui() {
                     printf("%d\n", waitAmount);
                 else
                     printf("Unable to find thread");
+            } else if (strcmp(command, "load")==0) {//============================LOAD===================================
+                if (readFile(parameter, &deps, &jobs, &jobsForThreads, &threadsNumber) != OP_SUCCESS) {
+                    printf("ERROR readFile function did not return OS_SUCCESS (file name was:%s)\n", parameter);
+                }
+                if (DEBUG) printData();
             }
 
-        } else if (strcmp(command, "exit") == 0) {
+        } else if (strcmp(command, "exit") == 0) {//========================EXIT===================================
             break;
-        } else if (strcmp(command, "MSW") == 0) {
+        } else if (strcmp(command, "MSW") == 0) {//=========================MSW===================================
             int max = maximal_switch_wait();
             printf("%d\n", max);
-        } else if (strcmp(command, "ASW") == 0) {
+        } else if (strcmp(command, "ASW") == 0) {//=========================ASW====================================
             float avg = avarage_switch_wait();
             printf("%f\n", avg);
-        } else if(strcmp(command,"switches")==0) {
+        } else if (strcmp(command, "switches") == 0) {//===================SWITCHES=================================
             int total = total_switch_wait();
-            printf("%d\n",total);
+            printf("%d\n", total);
+        } else if (strcmp(command, "run")==0) {
+            assert(deps && jobs && jobsForThreads && threadsNumber);
+            int threadIndex = 0;
+            for (threadIndex = 0; threadIndex < threadsNumber; threadIndex++) {
+                assert(create_thread(runThread, 0) != -1);
+            }
+            threads_start_with_ui(ui_thread);
         }
     }
 }

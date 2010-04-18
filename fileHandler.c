@@ -24,7 +24,7 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
         //initializing Jobs dataStracture
         *jobs = calloc(jobsAmount, sizeof (JobState));
         for (i; i <= jobsAmount - 1; i++)
-            (*jobs)[i] = 0;
+            (*jobs)[i] = NotStarted;
         //===========================================
         //initializing jobDeps DataStracture=========
         *jobDeps = calloc(jobsAmount, sizeof (boolean*));

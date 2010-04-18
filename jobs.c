@@ -5,7 +5,7 @@ boolean hasPendingJobs (tID threadId)
     ThreadJobs threadJobs = jobsForThreads[threadId];
     int i=0;
     for (i; i<threadJobs.jobsAmount; i++) {
-        tID testedJob = threadJobs.jobs[i];
+        tID testedJob = threadJobs.jobs[i]-1;
         if (jobs[testedJob] == NotStarted)
             return True;
     }
@@ -22,13 +22,14 @@ tID getJobForThread (tID threadId)
     ThreadJobs threadJobs = jobsForThreads[threadId];
     int i=0;
     for (i=0; i< threadJobs.jobsAmount; i++) {
-        tID jobId = threadJobs.jobs[i];
+        tID jobId = threadJobs.jobs[i]-1;
         int prevJob=0;
         boolean legalJobToExecute = True;
-        for (prevJob=1; prevJob<= jobNumber && legalJobToExecute; prevJob++) {
-            if (jobs[jobId] != NotStarted || (deps[prevJob-1][jobId-1]==1 && jobs[prevJob] != Done))
+        for (prevJob=0; prevJob<= jobNumber && legalJobToExecute; prevJob++) {
+            if (jobs[jobId] != NotStarted || (deps[prevJob][jobId]==1 && jobs[prevJob] != Done))
             {
                 legalJobToExecute = False;
+                break;
             }
             //printf("jobs[%d] != NotStarted=>%d || (deps[%d][%d]==1=>%d && jobs[%d] != Done =>%d\n",jobId,(jobs[jobId] != NotStarted),(jobId-1),(prevJob-1),(deps[jobId-1][prevJob-1]==1),prevJob,(jobs[prevJob] != Done));
         }
@@ -42,8 +43,9 @@ tID getJobForThread (tID threadId)
 
 op_status execJob (tID jobId)
 {
+    assert(jobs);
     jobs[jobId] = InProgress;
-    printf("Thread %d performed job %d\n",jobsForThreads[current_thread->id].threadID, jobId);
+    if (DEBUG) printf("Thread %d performed job %d\n",jobsForThreads[current_thread->id-1].threadID, jobId);
     jobs[jobId] = Done;
 }
 
