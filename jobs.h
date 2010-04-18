@@ -7,12 +7,15 @@
 
 #ifndef _JOBS_H
 #define	_JOBS_H
+
 #include "globalDefs.h"
+#include "ydThreads.h"
+
 typedef enum JobState
 {
-    NotStarted,
-    InProgress,
-    Done
+    NotStarted=1,
+    InProgress=2,
+    Done=3
 } JobState;
 
 typedef struct sThreadJobs
@@ -26,21 +29,20 @@ typedef JobState* Jobs;
 typedef boolean** JobsDeps; //dependencies between jobs, the graph matrix
 typedef ThreadJobs* JobsForThreads; //relation between the threads and the jobs
 
-boolean hasPendingJobs (tID threadId, JobsForThreads jft, Jobs jobsStatus);
+boolean hasPendingJobs (tID threadId);
 
-/*
- * return next job for thread.
- */
-tID getJobForThread (tID threadId, JobsForThreads jft, Jobs jobsStatus, JobsDeps jobsDeps);
+/* return next job for thread.*/
+tID getJobForThread (tID threadId);
 
-/*
- * this is the threads main function.
- */
-void runThread();
+/* execute the job by changind the job status to done */
+op_status execJob (tID jobId);
 
-static JobsForThreads jobsForThreads;
-static Jobs jobsStatus;
-static JobsDeps jobsDeps;
+void printData();
+
+JobsForThreads jobsForThreads;
+Jobs jobs;
+JobsDeps deps;
+int threadsNumber;
+int jobNumber;
 
 #endif	/* _JOBS_H */
-

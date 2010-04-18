@@ -6,9 +6,8 @@
                    projectFiles="true">
       <itemPath>fileHandler.h</itemPath>
       <itemPath>globalDefs.h</itemPath>
-      <itemPath>jobs.h</itemPath>
+      <itemPath>../../FromYaniv/jobs.h</itemPath>
       <itemPath>linkedList.h</itemPath>
-      <itemPath>tests.h</itemPath>
       <itemPath>ydThreads.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ResourceFiles"
