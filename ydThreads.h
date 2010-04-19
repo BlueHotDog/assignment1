@@ -27,6 +27,8 @@ typedef struct mctx_st {
 typedef struct threads_stats {
     int max_switch_wait;
     int curr_switch_wait;
+    int max_jobs_wait;
+    int curr_jobs_wait;
     tID id;
 } threads_stats_t,*threads_stats_t_p;
 
@@ -118,7 +120,14 @@ threads_stats_t_p get_thread_stats_byID(const IN tID threadID);
 //prints thread info
 void containerToString(const th_container_t_p const threadContainer);
 void increase_switch_wait_for_all_except(tID threadID);
+void increase_jobs_wait_for_all_except(tID threadID,int amount);
 int maximal_switch_wait();
+
+int jobs_wait(tID threadID);
+int maximal_jobs_wait();
+float avarage_jobs_wait();
+int total_jobs_wait();
+
 float avarage_switch_wait();
 int total_switch_wait();
 /* global manager and current thread*/

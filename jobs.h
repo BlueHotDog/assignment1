@@ -42,7 +42,7 @@ void printData();
 JobsForThreads jobsForThreads;
 Jobs jobs;
 JobsDeps deps;
-int threadsNumber;
-int jobNumber;
+int threadsAmount;
+int jobsAmount;
 
 #endif	/* _JOBS_H */

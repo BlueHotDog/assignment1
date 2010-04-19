@@ -41,7 +41,7 @@
  * JobsForThreads - self explained
  * ThreadCount - returns K from file
  */
-op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThreads* jobsForThreads, int* ThreadCount);
+op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThreads* jobsForThreads, int* ThreadCount,int* JobsCount);
 //Reads the k=x and returns x, -1 otherwise.
 int readThreadAmount(string line);
 int readJobsAmount(string line);

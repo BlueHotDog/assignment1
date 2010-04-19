@@ -1,4 +1,5 @@
 #include "ydThreads.h"
+#include "../Assignment1-backup/globalDefs.h"
 
 int mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func) {
     /* fetch current context */
@@ -50,12 +51,12 @@ void manager() {
             return;
         }
         current_thread = curr_thread_pointer;
-        if (DEBUG) printf("swapping manager with current_thread id %d\n", current_thread->id);
+        if (DEBUG) printf("swapping manager with current_thread id %d\n", current_thread->id-1);
         state = ENQ_THREAD;
         MCTX_SAVE(manager_thread);
         if (state == ENQ_THREAD) {
             state = RUN_THREAD;
-            if (DEBUG) printf("resuming thread id: %d\n", current_thread->id);
+            if (DEBUG) printf("resuming thread id: %d\n", current_thread->id-1);
             threads_stats_t_p stats;
             stats = get_thread_stats_byID(current_thread->id);
             assert(stats);
@@ -65,14 +66,14 @@ void manager() {
             MCTX_RESTORE(current_thread);
         } else if (state == TERM_THREAD) {
             tID saved_id = current_thread->id;
-            if (DEBUG) printf("THERM_THREAD state received, terminating thread id: %d\n", current_thread->id);
+            if (DEBUG) printf("THERM_THREAD state received, terminating thread id: %d\n", current_thread->id-1);
             op_status status = list_remove(container->container, current_thread->id);
             if (status == OP_FAIL) {
                 printf("ERROR fail to remove node at list_remove function\n");
                 exit(5);
             } else if (status == OP_DONE) {
                 container->container = NULL;
-                if (DEBUG) printf("removed thread id: %d and the container is empty!\n", saved_id);
+                if (DEBUG) printf("removed thread id: %d and the container is empty!\n", saved_id-1);
             } else {
                 scheduler_index--;
                 if (DEBUG) printf("removed thread id: %d\n", saved_id);
@@ -121,6 +122,8 @@ int create_thread(void (*sf_addr)(), void *sf_arg) {
         stats->id = new_thread->id;
         stats->max_switch_wait = 0;
         stats->curr_switch_wait = 0;
+        stats->curr_jobs_wait = 0;
+        stats->max_jobs_wait = 0;
         if (container->stats == NULL)
             container->stats = list_create(stats);
         else
@@ -147,8 +150,9 @@ void threads_start_with_ui(mctx_t_p ui_thread) {
 }
 
 void thread_yield(int pInfo, int statInfo) {
-    if (DEBUG) printf("thread %d yielding\n", current_thread_id());
+    if (DEBUG) printf("thread %d yielding\n", current_thread_id()-1);
     increase_switch_wait_for_all_except(current_thread_id());
+    increase_jobs_wait_for_all_except(current_thread_id(),statInfo);
     state = ENQ_THREAD;
     MCTX_SAVE(current_thread);
     if (state == ENQ_THREAD) {
@@ -157,6 +161,11 @@ void thread_yield(int pInfo, int statInfo) {
         MCTX_RESTORE(manager_thread);
     }
     state = RUN_THREAD;
+    threads_stats_t_p stats = get_thread_stats_byID(current_thread->id);
+    assert(stats);
+    if (stats->curr_jobs_wait > stats->max_jobs_wait)
+        stats->max_jobs_wait = stats->curr_jobs_wait;
+    stats->curr_jobs_wait = 0;
 }
 
 void thread_term() {
@@ -242,7 +251,57 @@ int total_switch_wait() {
     }
     return total;
 }
-
+int jobs_wait(tID threadID)
+{
+    assert(container && container->stats);
+    threads_stats_t_p threadStats = get_thread_stats_byID(threadID);
+    if (!threadStats)
+        return OP_FAIL;
+    if (threadStats)
+        return threadStats->max_jobs_wait;
+    else
+        return -1;
+}
+int maximal_jobs_wait()
+{
+    assert(container && container->stats);
+    node_t* node = container->stats;
+    int max = 0;
+    while (node) {
+        if (THREAD_STATS(node)->max_jobs_wait> max) max = THREAD_STATS(node)->max_jobs_wait;
+        node = node->next;
+    }
+    return max;
+}
+float avarage_jobs_wait()
+{
+    assert(container && container->stats);
+    node_t* node = container->stats;
+    int total = 0, count = 0;
+    while (node) {
+        count++;
+        total += THREAD_STATS(node)->max_jobs_wait;
+        node = node->next;
+    }
+    if (count != 0)
+    {
+        float res = (float)total / (float)count;
+        return res;
+    }
+    else
+        return 0;
+}
+int total_jobs_wait()
+{
+    assert(container && container->stats);
+    node_t* node = container->stats;
+    int total = 0;
+    while (node) {
+        total += THREAD_STATS(node)->max_jobs_wait;
+        node = node->next;
+    }
+    return total;
+}
 void containerToString(const th_container_t_p const threadContainer) {
     printf("THREAD ID:\t%d\n", THREAD_DATA(threadContainer->container)->id);
     printf("THREAD MaxSwitchWait:\t%d\n", THREAD_STATS(threadContainer->stats)->max_switch_wait);
@@ -258,6 +317,16 @@ void increase_switch_wait_for_all_except(tID threadID) {
     }
 }
 
+void increase_jobs_wait_for_all_except(tID threadID,int amount)
+{
+    node_t_p node = container->stats;
+    assert(node);
+    while (node) {
+        if (THREAD_STATS(node)->id != threadID)
+            THREAD_STATS(node)->curr_jobs_wait+=amount;
+        node = node->next;
+    }
+}
 void reset_iterator() {
     next_id = 0;
 }

@@ -31,12 +31,12 @@ OBJECTDIR=build/${CND_CONF}/${CND_PLATFORM}
 
 # Object Files
 OBJECTFILES= \
-	${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/ydThreads.o \
-	${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/tests.o \
-	${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/linkedList.o \
-	${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/jobs.o \
-	${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/main.o \
-	${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/fileHandler.o
+	${OBJECTDIR}/linkedList.o \
+	${OBJECTDIR}/fileHandler.o \
+	${OBJECTDIR}/ydThreads.o \
+	${OBJECTDIR}/main.o \
+	${OBJECTDIR}/jobs.o \
+	${OBJECTDIR}/tests.o
 
 # C Compiler Flags
 CFLAGS=
@@ -62,35 +62,35 @@ dist/Release/GNU-Linux-x86/assignment1: ${OBJECTFILES}
 	${MKDIR} -p dist/Release/GNU-Linux-x86
 	${LINK.c} -o ${CND_DISTDIR}/${CND_CONF}/${CND_PLATFORM}/assignment1 ${OBJECTFILES} ${LDLIBSOPTIONS} 
 
-${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/ydThreads.o: nbproject/Makefile-${CND_CONF}.mk ../Assignment1-backup/ydThreads.c 
-	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup
+${OBJECTDIR}/linkedList.o: nbproject/Makefile-${CND_CONF}.mk linkedList.c 
+	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/ydThreads.o ../Assignment1-backup/ydThreads.c
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/linkedList.o linkedList.c
 
-${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/tests.o: nbproject/Makefile-${CND_CONF}.mk ../Assignment1-backup/tests.c 
-	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup
+${OBJECTDIR}/fileHandler.o: nbproject/Makefile-${CND_CONF}.mk fileHandler.c 
+	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/tests.o ../Assignment1-backup/tests.c
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/fileHandler.o fileHandler.c
 
-${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/linkedList.o: nbproject/Makefile-${CND_CONF}.mk ../Assignment1-backup/linkedList.c 
-	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup
+${OBJECTDIR}/ydThreads.o: nbproject/Makefile-${CND_CONF}.mk ydThreads.c 
+	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/linkedList.o ../Assignment1-backup/linkedList.c
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/ydThreads.o ydThreads.c
 
-${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/jobs.o: nbproject/Makefile-${CND_CONF}.mk ../Assignment1-backup/jobs.c 
-	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup
+${OBJECTDIR}/main.o: nbproject/Makefile-${CND_CONF}.mk main.c 
+	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/jobs.o ../Assignment1-backup/jobs.c
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/main.o main.c
 
-${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/main.o: nbproject/Makefile-${CND_CONF}.mk ../Assignment1-backup/main.c 
-	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup
+${OBJECTDIR}/jobs.o: nbproject/Makefile-${CND_CONF}.mk jobs.c 
+	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/main.o ../Assignment1-backup/main.c
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/jobs.o jobs.c
 
-${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/fileHandler.o: nbproject/Makefile-${CND_CONF}.mk ../Assignment1-backup/fileHandler.c 
-	${MKDIR} -p ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup
+${OBJECTDIR}/tests.o: nbproject/Makefile-${CND_CONF}.mk tests.c 
+	${MKDIR} -p ${OBJECTDIR}
 	${RM} $@.d
-	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/_ext/_DOTDOT/Assignment1-backup/fileHandler.o ../Assignment1-backup/fileHandler.c
+	$(COMPILE.c) -O2 -MMD -MP -MF $@.d -o ${OBJECTDIR}/tests.o tests.c
 
 # Subprojects
 .build-subprojects:

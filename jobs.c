@@ -1,4 +1,5 @@
 #include "jobs.h"
+#include "../Assignment1-backup/jobs.h"
 
 boolean hasPendingJobs (tID threadId)
 {
@@ -25,7 +26,7 @@ tID getJobForThread (tID threadId)
         tID jobId = threadJobs.jobs[i]-1;
         int prevJob=0;
         boolean legalJobToExecute = True;
-        for (prevJob=0; prevJob<= jobNumber && legalJobToExecute; prevJob++) {
+        for (prevJob=0; prevJob< jobsAmount && legalJobToExecute; prevJob++) {
             if (jobs[jobId] != NotStarted || (deps[prevJob][jobId]==1 && jobs[prevJob] != Done))
             {
                 legalJobToExecute = False;
@@ -45,14 +46,15 @@ op_status execJob (tID jobId)
 {
     assert(jobs);
     jobs[jobId] = InProgress;
-    if (DEBUG) printf("Thread %d performed job %d\n",jobsForThreads[current_thread->id-1].threadID, jobId);
+    if (DEBUG) printf("Thread %d performed job %d\n",jobsForThreads[current_thread->id-1].threadID-1, jobId);
     jobs[jobId] = Done;
 }
 
 void printData()
 {
-    printf("info about the input:\n");
-    printf("ThreadNumber=%d\n",threadsNumber);
+    printf("===============info about the input:===============\n");
+    printf("ThreadNumber=%d\n",threadsAmount);
+    printf("jobsAmount=%d\n",jobsAmount);
     printf("Deps:\n");
     int i,j;
     for (i=0; deps[i] != NULL; i++)
@@ -84,7 +86,7 @@ void printData()
     }
     printf("\n");
     i=0;
-    for (i=0; i != threadsNumber; i++)
+    for (i=0; i != threadsAmount; i++)
     {
         printf("jobsForThreads %d:\n\tJob Amount:%d\n\tThread ID: %d\n\tJobs: ",i ,jobsForThreads[i].jobsAmount, jobsForThreads[i].threadID);
         for (j=0; jobsForThreads[i].jobs[j] != 0; j++)
