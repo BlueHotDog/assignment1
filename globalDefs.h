@@ -25,7 +25,7 @@ typedef char boolean;
 typedef char* string;
 
 /* thread stack size */
-#define MAX_STACK_SIZE 4000
+#define MAX_STACK_SIZE 0x4000
 #define MAX_INPUT_LENGTH 50
 #define NULL ((void *)0)
 #define NULL_TID -1
