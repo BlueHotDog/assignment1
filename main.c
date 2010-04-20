@@ -38,9 +38,11 @@ mctx_t_p ui_thread;
 
 mctx_t_p create_ui_thread(void* ui_func) {
     void* new_thread_stack = calloc(MAX_STACK_SIZE, sizeof (void));
+    memset(new_thread_stack,0,MAX_STACK_SIZE* sizeof (void));
     mctx_t_p new_thread = malloc(sizeof (mctx_t));
-    new_thread->threadStack = new_thread_stack;
-    mctx_create(new_thread, ui_func, NULL, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE), NULL);
+    memset(new_thread,0,sizeof (mctx_t));
+   // new_thread->threadStack = new_thread_stack;
+    mctx_create(new_thread, ui_func, NULL, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE), NULL,0);
     next_id--;
     ui_thread = new_thread;
     return new_thread;
@@ -49,7 +51,8 @@ mctx_t_p create_ui_thread(void* ui_func) {
 void ui() {
     string command = malloc(MAX_INPUT_LENGTH);
     string parameter = malloc(MAX_INPUT_LENGTH);
-
+    memset(command, 0, MAX_INPUT_LENGTH);
+    memset(parameter, 0, MAX_INPUT_LENGTH);
     ASSERT_RUN(readFile("/home/danni/test", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount));
     ASSERT_RUN(printData());
 
@@ -102,7 +105,7 @@ void ui() {
             int total = total_switch_wait();
             printf("%d\n", total);
         } else if (strcmp(command, "run") == 0) {
-            ASSERT(deps && jobs && jobsForThreads && threadsAmount);
+            ASSERT(container && deps && jobs && jobsForThreads && threadsAmount);
             if (container->stats)
                 delete_statistics();
             int threadIndex = 0;
@@ -119,12 +122,15 @@ void free_memory() {
 }
 
 int main() {
-
     mctx_t_p ui_thread = create_ui_thread(ui);
     reset_iterator();
-    thread_manager_init(0, &(ui_thread->uc));
+    thread_manager_init(0, &(ui_thread->uc),0);
     MCTX_RESTORE(ui_thread);
     return 0;
+}
+
+void initGlobalVars() {
+
 }
 
 int runTests() {

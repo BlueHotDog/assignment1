@@ -10,26 +10,26 @@
 #include "jobs.h"
 #define LINE_LENGTH 1000
 #define GET_NEXT_LINE(aLine,aFile) {\
-    boolean aFoundChar = False;\
+    boolean aFoundChar = false;\
     while (!aFoundChar) {\
         fgets(aLine, LINE_LENGTH, aFile);\
         char* p = aLine;\
         while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')\
             p++;\
         if (*p != 0)\
-            aFoundChar = True;\
+            aFoundChar = true;\
     };\
     aFoundChar,p=NULL;\
 }
 
 #define GET_NEXT_CHAR(aChar,aLine) {\
-    boolean aFoundChar = False;\
+    boolean aFoundChar = false;\
     while (!aFoundChar) {\
         aChar = &aLine;\
         while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')\
             aChar++;\
         if (*aChar != 0)\
-            aFoundChar = True;\
+            aFoundChar = true;\
     };\
     aFoundChar=NULL;\
 }

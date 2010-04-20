@@ -1,7 +1,7 @@
 #include "ydThreads.h"
 #include "globalDefs.h"
 
-tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func) {
+tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func,int arg_count) {
     /* fetch current context */
     getcontext(&(mctx->uc));
     /* adjust to new context */
@@ -13,7 +13,7 @@ tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void
     mctx->id = id_iterator();
     ASSERT_PRINT("added new thread id: %d\n", mctx->id);
     /* make new context */
-    makecontext(&(mctx->uc), sf_addr, 1, sf_arg);
+    makecontext(&(mctx->uc), sf_addr, arg_count,sf_arg);
     return mctx->id;
 }
 
@@ -107,39 +107,50 @@ void manager() {
     }
 }
 
-void thread_manager_init(void* arg, ucontext_t* ret_thread) {
+void thread_manager_init(void* arg, ucontext_t* ret_thread,int arg_count) {
     ASSERT_PRINT("%s\n", "init manager thread");
     if (!manager_thread && !current_thread) {
+        int i = 0;
         manager_thread = malloc(sizeof (mctx_t));
+        memset(manager_thread, 0, sizeof (mctx_t));
+
         current_thread = malloc(sizeof (mctx_t));
+        memset(current_thread, 0, sizeof (mctx_t));
+
         ASSERT(manager_thread && current_thread);
+        
         void* manager_stack = calloc(MAX_STACK_SIZE, sizeof (void));
+        memset(manager_stack, 0, MAX_STACK_SIZE * sizeof (void));
         ASSERT(manager_stack);
-        mctx_create(manager_thread, &manager, arg, manager_stack, (sizeof (char) * MAX_STACK_SIZE), ret_thread);
-        if (!container)
+
+        mctx_create(manager_thread, &manager, arg, manager_stack, (sizeof (char) * MAX_STACK_SIZE), ret_thread,arg_count);
+
+        if (!container) {
             container = malloc(sizeof (th_container_t));
+            memset(container, 0, sizeof (th_container_t));
+        }
     } else
         ASSERT_PRINT("manager thread already initialized\n");
     ASSERT(container && manager_thread && current_thread);
 }
 
-int create_thread(void (*sf_addr)(), void *sf_arg) {
+int create_thread(void (*sf_addr)(), void *sf_arg,int arg_count) {
     int threadID = -1;
     do {
         void* new_thread_stack = calloc(MAX_STACK_SIZE, sizeof (void));
         if (!new_thread_stack) //not enough memory
             break;
         mctx_t_p new_thread = malloc(sizeof (mctx_t));
-        /*
-                new_thread->initPriority = 0;
-                new_thread->priority = 0;
-         */
+
+        new_thread->initPriority = 0;
+        new_thread->priority = 0;
+
         if (!new_thread) //error handling
         {
             free(new_thread_stack);
             break;
         }
-        threadID = mctx_create(new_thread, sf_addr, sf_arg, new_thread_stack, (sizeof (void) * MAX_STACK_SIZE), NULL);
+        threadID = mctx_create(new_thread, sf_addr, sf_arg, new_thread_stack, (sizeof (void) * MAX_STACK_SIZE), NULL,arg_count);
         if (!container)
             container = malloc(sizeof (th_container_t));
 
@@ -158,7 +169,7 @@ int create_thread(void (*sf_addr)(), void *sf_arg) {
             container->stats = list_create(stats);
         else
             list_add_last(container->stats, stats);
-    } while (False);
+    } while (false);
     return threadID;
 }
 

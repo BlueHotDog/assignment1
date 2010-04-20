@@ -1,10 +1,11 @@
 #include "fileHandler.h"
 #include "globalDefs.h"
 
-op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThreads* jobsForThreads, int* threadCount,int* jobsCount) {
+op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThreads* jobsForThreads, int* threadCount, int* jobsCount) {
+
     FILE* hFile;
     hFile = fopen(file_name, "r");
-    int i = 0;
+    int i=0, j = 0;
     if (hFile == NULL) {
         return OP_FAIL;
     } else {
@@ -23,14 +24,17 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
         *jobsCount = readJobsAmount(oneLine);
         //initializing Jobs dataStracture
         *jobs = calloc(*jobsCount, sizeof (JobState));
-        for (i; i <= *jobsCount - 1; i++)
+
+        for (i=0; i < *jobsCount; i++)
             (*jobs)[i] = NotStarted;
         //===========================================
         //initializing jobDeps DataStracture=========
         *jobDeps = calloc(*jobsCount, sizeof (boolean*));
-
-        for (i = 0; i <= *jobsCount - 1; i++) {
+        for (i = 0; i < *jobsCount; i++) {
             (*jobDeps)[i] = calloc(*jobsCount, sizeof (boolean));
+            for (j = 0; j<*jobsCount; j++)
+                (*jobDeps)[i][j] = false;
+
         }
         int col = 0;
         for (i = 0; i <= *jobsCount - 1; i++)//reading input file rows
@@ -58,8 +62,8 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
                 while (*currChar == ' ' || *currChar == '\t')
                     currChar++;
                 sscanf(currChar, "%d:", &currentThread);
-                (*jobsForThreads)[currentThread-1].jobs = calloc(jobsAmount, sizeof (int));
-                (*jobsForThreads)[currentThread-1].threadID = currentThread;
+                (*jobsForThreads)[currentThread - 1].jobs = calloc(*jobsCount, sizeof (int));
+                (*jobsForThreads)[currentThread - 1].threadID = currentThread;
 
                 currChar = currChar + 2;
                 while (*currChar != '\r' && *currChar != '\n') {
@@ -72,10 +76,10 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
                         if (*currChar == ',')
                             currChar++;
 
-                        (*jobsForThreads)[currentThread-1].jobs[counter++] = currentJob;
+                        (*jobsForThreads)[currentThread - 1].jobs[counter++] = currentJob;
                     }
                 }
-                (*jobsForThreads)[currentThread-1].jobsAmount = counter;
+                (*jobsForThreads)[currentThread - 1].jobsAmount = counter;
             }
         }
 
@@ -86,13 +90,13 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
 }
 
 int readThreadAmount(string line) {
-    int toReturn;
+    int toReturn = -1;
     sscanf(line, "k = %d", &toReturn);
     return toReturn;
 }
 
 int readJobsAmount(string line) {
-    int toReturn;
+    int toReturn = -1;
     sscanf(line, "n = %d", &toReturn);
     return toReturn;
 }

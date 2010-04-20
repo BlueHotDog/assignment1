@@ -44,5 +44,4 @@ Jobs jobs;
 JobsDeps deps;
 int threadsAmount;
 int jobsAmount;
-
 #endif	/* _JOBS_H */

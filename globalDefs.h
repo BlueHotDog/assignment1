@@ -18,10 +18,9 @@ typedef enum op_status {
     OP_FAIL=-1,
     OP_DONE
 } op_status;
-typedef enum boolean{
-    True = 1,
-    False = 0
-} boolean;
+typedef char boolean;
+#define false 0
+#define true (!false)
 
 typedef char* string;
 
@@ -33,7 +32,7 @@ typedef char* string;
 #define OUT
 #define IN
 
-#define DEBUG
+//#define DEBUG
 
 //DEBUGGING
 # define __ASSERT_VOID_CAST (void)

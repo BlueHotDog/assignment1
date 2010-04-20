@@ -118,8 +118,8 @@ op_status list_add_last_rec (node_t_p list, void* data) {
 
 boolean list_is_empty (node_t_p list) {
     if (list == NULL)
-        return True;
+        return true;
     if (list-> data == NULL && list->next == NULL)
-        return True;
-    return False;
+        return true;
+    return false;
 }

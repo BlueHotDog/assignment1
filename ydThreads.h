@@ -25,10 +25,10 @@ typedef enum run_e {
 } run_t;
 
 typedef struct mctx_st {
-//    int priority;
+    int priority;
     int initPriority;
     ucontext_t uc;
-    void* threadStack;
+//    void* threadStack;
     tID id;
 } mctx_t, *mctx_t_p;
 
@@ -73,7 +73,7 @@ static int scheduler_index = 0;
 /* create machine context which can later be used to save & restore threads
  * Returns:new thread ID or -1 if error
  */
-tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func);
+tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func,int arg_count);
 //TODO:removes a thread from the list and memory
 op_status delete_thread(const tID threadID);
 /* This function receives as arguments a pointer to the thread’s main function and a pointer to
@@ -83,7 +83,7 @@ op_status delete_thread(const tID threadID);
  * thread
  * RETURNS: OP_CODE or new thread ID
  */
-int create_thread(void (*sf_addr)(), void *sf_arg);
+int create_thread(void (*sf_addr)(), void *sf_arg,int arg_count);
 
 /* This function saves the current thread’s context and resumes the manager (restores the
  * manager’s context). The argument pInfo is related to the requested priority upon yielding
@@ -97,7 +97,7 @@ void thread_yield(int pInfo, int statInfo);
 void thread_term();
 
 /* Initializes the manager and the thread container data structure */
-void thread_manager_init(void* arg, ucontext_t* ret_func);
+void thread_manager_init(void* arg, ucontext_t* ret_func,int arg_count);
 
 /* This function starts the user space threads. All it does is simply let the manager run
  * (restores the manager’s context) */

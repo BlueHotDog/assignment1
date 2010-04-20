@@ -31,7 +31,7 @@ int TestReadFile()
 int TestQ1()
 {
   printf("TEST:TestQ1\n");
-  thread_manager_init(0,NULL);
+  thread_manager_init(0,NULL,0);
 /*
   create_thread(a, 0);
   create_thread(b, 0);
