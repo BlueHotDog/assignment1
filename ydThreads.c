@@ -11,7 +11,9 @@ tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void
     mctx->uc.uc_stack.ss_flags = 0;
     /* set new thread id to the new theard */
     mctx->id = id_iterator();
-    if (DEBUG) printf("added new thread id: %d\n", mctx->id);
+    #ifdef DEBUG 
+        printf("added new thread id: %d\n", mctx->id);
+    #endif
     /* make new context */
     makecontext(&(mctx->uc), sf_addr, 1, sf_arg);
     return mctx->id;
@@ -35,7 +37,9 @@ mctx_t_p scheduler(run_t runType) {
 }
 
 mctx_t_p scheduler_rr() {
-    if (DEBUG) printf("%s\n", "enter Scheduler function");
+    #ifdef DEBUG 
+        printf("%s\n", "enter Scheduler function");
+    #endif
     mctx_t_p next_thread = ((mctx_t_p) list_at(container->container, scheduler_index));
     scheduler_index++;
     if (next_thread == NULL) {
@@ -43,14 +47,20 @@ mctx_t_p scheduler_rr() {
         mctx_t_p returned_thread = ((mctx_t_p) list_at(container->container, scheduler_index));
         scheduler_index++;
         if (returned_thread == NULL) {
-            if (DEBUG) printf("Thread list is empty, must mean that there are no more theards to run.\n");
-            if (DEBUG) printf("exit Scheduler function with NULL value\n");
+            #ifdef DEBUG
+                printf("Thread list is empty, must mean that there are no more theards to run.\n");
+                printf("exit Scheduler function with NULL value\n");
+            #endif
             return NULL;
         }
-        if (DEBUG) printf("%s\n", "exit Scheduler function");
+        #ifdef DEBUG 
+            printf("%s\n", "exit Scheduler function");
+        #endif
         return returned_thread;
     } else {
-        if (DEBUG) printf("returning thread %d exit Scheduler function\n", next_thread->id);
+        #ifdef DEBUG 
+            printf("returning thread %d exit Scheduler function\n", next_thread->id);
+        #endif
         return next_thread;
     }
 }
@@ -65,23 +75,31 @@ mctx_t_p scheduler_yd()
 
 void manager() {
 
-    if (DEBUG) printf("%s\n", "enter manager function");
+    #ifdef DEBUG 
+        printf("%s\n", "enter manager function");
+    #endif
     if (&container == NULL) {
         printf("%s\n", "ERROR, container reached manager as NULL");
     }
     while (!(list_is_empty(container->container))) {
         mctx_t_p curr_thread_pointer = scheduler(RR);
         if (curr_thread_pointer == NULL) {
-            if (DEBUG) printf("no more theards in the list, exiting the tread manager and gracefully terminating run.\n");
+            #ifdef DEBUG 
+                printf("no more theards in the list, exiting the tread manager and gracefully terminating run.\n");
+            #endif
             return;
         }
         current_thread = curr_thread_pointer;
-        if (DEBUG) printf("swapping manager with current_thread id %d\n", current_thread->id - 1);
+        #ifdef DEBUG 
+            printf("swapping manager with current_thread id %d\n", current_thread->id - 1);
+        #endif
         state = ENQ_THREAD;
         MCTX_SAVE(manager_thread);
         if (state == ENQ_THREAD) {
             state = RUN_THREAD;
-            if (DEBUG) printf("resuming thread id: %d\n", current_thread->id - 1);
+            #ifdef DEBUG 
+                printf("resuming thread id: %d\n", current_thread->id - 1);
+            #endif
             threads_stats_t_p stats;
             stats = get_thread_stats_byID(current_thread->id);
             assert(stats);
@@ -91,24 +109,32 @@ void manager() {
             MCTX_RESTORE(current_thread);
         } else if (state == TERM_THREAD) {
             tID saved_id = current_thread->id;
-            if (DEBUG) printf("THERM_THREAD state received, terminating thread id: %d\n", current_thread->id - 1);
+            #ifdef DEBUG 
+                printf("THERM_THREAD state received, terminating thread id: %d\n", current_thread->id - 1);
+            #endif
             op_status status = list_remove(container->container, current_thread->id);
             if (status == OP_FAIL) {
                 printf("ERROR fail to remove node at list_remove function\n");
                 exit(5);
             } else if (status == OP_DONE) {
                 container->container = NULL;
-                if (DEBUG) printf("removed thread id: %d and the container is empty!\n", saved_id - 1);
+                #ifdef DEBUG 
+                    printf("removed thread id: %d and the container is empty!\n", saved_id - 1);
+                #endif
             } else {
                 scheduler_index--;
-                if (DEBUG) printf("removed thread id: %d\n", saved_id);
+                #ifdef DEBUG 
+                    printf("removed thread id: %d\n", saved_id);
+                #endif
             }
         }
     }
 }
 
 void thread_manager_init(void* arg, ucontext_t* ret_thread) {
-    if (DEBUG) printf("%s\n", "init manager thread");
+    #ifdef DEBUG 
+        printf("%s\n", "init manager thread");
+    #endif
     if (!manager_thread && !current_thread) {
         manager_thread = malloc(sizeof (mctx_t));
         current_thread = malloc(sizeof (mctx_t));
@@ -118,7 +144,10 @@ void thread_manager_init(void* arg, ucontext_t* ret_thread) {
         mctx_create(manager_thread, &manager, arg, manager_stack, (sizeof (char) * MAX_STACK_SIZE), ret_thread);
         if (!container)
             container = malloc(sizeof (th_container_t));
-    } else if (DEBUG) printf("manager thread already initialized\n");
+    } else 
+        #ifdef DEBUG 
+            printf("manager thread already initialized\n");
+        #endif
     assert(container && manager_thread && current_thread);
 }
 
@@ -146,7 +175,7 @@ int create_thread(void (*sf_addr)(), void *sf_arg) {
             container->container = list_create(new_thread);
         } else
             list_add_last(container->container, new_thread);
-        threads_stats_t_p stats = malloc(sizeof (threads_stats_t_p));
+        threads_stats_t_p stats = malloc(sizeof (threads_stats_t));
         assert(stats);
         stats->id = new_thread->id;
         stats->max_switch_wait = 0;
@@ -162,31 +191,41 @@ int create_thread(void (*sf_addr)(), void *sf_arg) {
 }
 
 void threads_start() {
-    if (DEBUG) printf("resuming manager thread\n");
+    #ifdef DEBUG 
+        printf("resuming manager thread\n");
+    #endif
     MCTX_RESTORE(manager_thread);
 }
 
 void threads_start_with_ui(mctx_t_p ui_thread) {
-    if (DEBUG) printf("threads_start with ui_thread param\n");
+    #ifdef DEBUG
+        printf("threads_start with ui_thread param\n");
+    #endif
     state = ENQ_THREAD;
     MCTX_SAVE(ui_thread);
     if (state == ENQ_THREAD) {
         state = RUN_THREAD;
-        if (DEBUG) printf("resuming manager thread  with ui_thread param\n");
+        #ifdef DEBUG
+            printf("resuming manager thread  with ui_thread param\n");
+        #endif
         MCTX_RESTORE(manager_thread);
     }
     state = RUN_THREAD;
 }
 
 void thread_yield(int pInfo, int statInfo) {
-    if (DEBUG) printf("thread %d yielding\n", current_thread_id() - 1);
+    #ifdef DEBUG 
+        printf("thread %d yielding\n", current_thread_id() - 1);
+    #endif
     increase_switch_wait_for_all_except(current_thread_id()); //TODO:do not increase for dead threads
     increase_jobs_wait_for_all_except(current_thread_id(), statInfo);
     state = ENQ_THREAD;
     MCTX_SAVE(current_thread);
     if (state == ENQ_THREAD) {
         state = RUN_THREAD;
-        if (DEBUG) printf("resuming manager thread\n");
+        #ifdef DEBUG 
+            printf("resuming manager thread\n");
+        #endif
         MCTX_RESTORE(manager_thread);
     }
     state = RUN_THREAD;

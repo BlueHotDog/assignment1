@@ -8,17 +8,15 @@
 #include "ydThreads.h"
 #include "fileHandler.h"
 #include "jobs.h"
-//should be working..
 
 void runThread() {
     int jobsDone = 0;
     node_t_p node = container->stats;
     assert(node);
     while (node) {
-        if (THREAD_STATS(node)->id == current_thread_id())
-        {
-            THREAD_STATS(node)->curr_jobs_wait=0;
-            THREAD_STATS(node)->max_jobs_wait=0;
+        if (THREAD_STATS(node)->id == current_thread_id()) {
+            THREAD_STATS(node)->curr_jobs_wait = 0;
+            THREAD_STATS(node)->max_jobs_wait = 0;
             break;
         }
         node = node->next;
@@ -29,7 +27,9 @@ void runThread() {
             execJob(jobId);
             jobsDone++;
         } else {
-            if (DEBUG) printf("Thread %d will wait because there is no free job for him to execute\n", current_thread->id - 1);
+            #ifdef DEBUG 
+                printf("Thread %d will wait because there is no free job for him to execute\n", current_thread->id - 1);
+            #endif
         }
         thread_yield(0, jobsDone);
 
@@ -40,7 +40,7 @@ void runThread() {
 mctx_t_p ui_thread;
 
 mctx_t_p create_ui_thread(void* ui_func) {
-    void* new_thread_stack = calloc(MAX_STACK_SIZE, sizeof(void));
+    void* new_thread_stack = calloc(MAX_STACK_SIZE, sizeof (void));
     mctx_t_p new_thread = malloc(sizeof (mctx_t));
     new_thread->threadStack = new_thread_stack;
     mctx_create(new_thread, ui_func, NULL, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE), NULL);
@@ -54,7 +54,7 @@ void ui() {
     string parameter = malloc(MAX_INPUT_LENGTH);
 #ifdef DEBUG
     readFile("/home/yanivdu/Desktop/OS-Assignment-1/file.txt", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
-    if (DEBUG) printData();
+    printData();
 #endif
     while (strcmp(command, "exit") != 0) {
         printf(">");
@@ -73,7 +73,9 @@ void ui() {
                 if (readFile(parameter, &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount) != OP_SUCCESS) {
                     printf("ERROR readFile function did not return OS_SUCCESS (file name was:%s)\n", parameter);
                 }
-                if (DEBUG) printData();
+                #ifdef DEBUG 
+                    printData();
+                #endif
             } else if (strcmp(command, "JW") == 0) {
                 int threadNumber = 0;
                 sscanf(parameter, "%d", &threadNumber); //converting parameter
@@ -116,6 +118,7 @@ void ui() {
 }
 
 int main() {
+
     mctx_t_p ui_thread = create_ui_thread(ui);
     reset_iterator();
     thread_manager_init(0, &(ui_thread->uc));

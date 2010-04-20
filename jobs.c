@@ -45,7 +45,9 @@ op_status execJob (tID jobId)
 {
     assert(jobs);
     jobs[jobId] = InProgress;
-    if (DEBUG) printf("Thread %d performed job %d\n",jobsForThreads[current_thread->id-1].threadID-1, jobId);
+    #ifdef DEBUG
+        printf("Thread %d performed job %d\n",jobsForThreads[current_thread->id-1].threadID-1, jobId);
+    #endif
     jobs[jobId] = Done;
 }
 

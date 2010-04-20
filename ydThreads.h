@@ -26,7 +26,7 @@ typedef enum run_e {
 
 typedef struct mctx_st {
 //    int priority;
-//    int initPriority;
+    int initPriority;
     ucontext_t uc;
     void* threadStack;
     tID id;
