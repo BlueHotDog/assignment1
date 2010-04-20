@@ -33,14 +33,21 @@ typedef char* string;
 #define OUT
 #define IN
 
+#define DEBUG
 
 //DEBUGGING
-#define DEBUG
 # define __ASSERT_VOID_CAST (void)
-# define assert(expr)							\
-  ((expr)								\
-   ? __ASSERT_VOID_CAST (0)						\
-   : exit(printf("=========assertion failed on line:%d\t file:%s\n",__LINE__,__FILE__)))
-
+#ifdef DEBUG
+    #define ASSERT(expr)							\
+      ((expr)								\
+       ? __ASSERT_VOID_CAST (0)						\
+       : exit(printf("=========assertion failed on line:%d\t file:%s\n",__LINE__,__FILE__)))
+    #define ASSERT_RUN(expr) (expr)
+    #define ASSERT_PRINT(expr...)  (printf(expr))
+#else
+    #define ASSERT(expr)        __ASSERT_VOID_CAST (0)
+    #define ASSERT_RUN(expr)    __ASSERT_VOID_CAST (0)
+    #define ASSERT_PRINT(expr...)  __ASSERT_VOID_CAST (0)
+#endif
 #endif	/* _GLOBALDEFS_H */
 

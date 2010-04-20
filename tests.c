@@ -25,7 +25,7 @@ int TestReadFile()
     Jobs jobs;
     JobsDeps deps;
     JobsForThreads jobsForThreads;
-    assert(readFile("/home/danni/test",&deps,&jobs,&jobsForThreads,&threads)==OP_SUCCESS);
+    ASSERT(readFile("/home/danni/test",&deps,&jobs,&jobsForThreads,&threads)==OP_SUCCESS);
 }
 
 int TestQ1()

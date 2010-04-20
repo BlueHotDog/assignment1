@@ -141,6 +141,8 @@ int total_jobs_wait();
 
 float avarage_switch_wait();
 int total_switch_wait();
+
+op_status delete_statistics();
 /* global manager and current thread*/
 mctx_t_p manager_thread, current_thread;
 /* the thread container holds all thread in a list data type*/

@@ -12,7 +12,6 @@
 void runThread() {
     int jobsDone = 0;
     node_t_p node = container->stats;
-    assert(node);
     while (node) {
         if (THREAD_STATS(node)->id == current_thread_id()) {
             THREAD_STATS(node)->curr_jobs_wait = 0;
@@ -27,9 +26,7 @@ void runThread() {
             execJob(jobId);
             jobsDone++;
         } else {
-            #ifdef DEBUG 
-                printf("Thread %d will wait because there is no free job for him to execute\n", current_thread->id - 1);
-            #endif
+            ASSERT_PRINT("Thread %d will wait because there is no free job for him to execute\n", current_thread->id - 1);
         }
         thread_yield(0, jobsDone);
 
@@ -52,10 +49,10 @@ mctx_t_p create_ui_thread(void* ui_func) {
 void ui() {
     string command = malloc(MAX_INPUT_LENGTH);
     string parameter = malloc(MAX_INPUT_LENGTH);
-#ifdef DEBUG
-    readFile("/home/yanivdu/Desktop/OS-Assignment-1/file.txt", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
-    printData();
-#endif
+
+    ASSERT_RUN(readFile("/home/danni/test", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount));
+    ASSERT_RUN(printData());
+
     while (strcmp(command, "exit") != 0) {
         printf(">");
         scanf("%s", command);
@@ -73,9 +70,7 @@ void ui() {
                 if (readFile(parameter, &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount) != OP_SUCCESS) {
                     printf("ERROR readFile function did not return OS_SUCCESS (file name was:%s)\n", parameter);
                 }
-                #ifdef DEBUG 
-                    printData();
-                #endif
+                ASSERT_RUN(printData());
             } else if (strcmp(command, "JW") == 0) {
                 int threadNumber = 0;
                 sscanf(parameter, "%d", &threadNumber); //converting parameter
@@ -107,14 +102,20 @@ void ui() {
             int total = total_switch_wait();
             printf("%d\n", total);
         } else if (strcmp(command, "run") == 0) {
-            assert(deps && jobs && jobsForThreads && threadsAmount);
+            ASSERT(deps && jobs && jobsForThreads && threadsAmount);
+            if (container->stats)
+                delete_statistics();
             int threadIndex = 0;
             for (threadIndex = 0; threadIndex < threadsAmount; threadIndex++) {
-                assert(create_thread(runThread, 0) != -1);
+                ASSERT(create_thread(runThread, 0) != -1);
             }
             threads_start_with_ui(ui_thread);
         }
     }
+}
+
+void free_memory() {
+    delete_statistics();
 }
 
 int main() {
