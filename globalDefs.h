@@ -16,7 +16,11 @@ typedef int tID;
 typedef enum op_status {
     OP_SUCCESS=1,
     OP_FAIL=-1,
+<<<<<<< HEAD
     OP_DONE=3
+=======
+    OP_DONE=2
+>>>>>>> Danni
 } op_status;
 typedef char boolean;
 #define false 0
@@ -25,7 +29,7 @@ typedef char boolean;
 typedef char* string;
 
 /* thread stack size */
-#define MAX_STACK_SIZE 4000
+#define MAX_STACK_SIZE 0x4000
 #define MAX_INPUT_LENGTH 50
 #define NULL ((void *)0)
 #define NULL_TID -1

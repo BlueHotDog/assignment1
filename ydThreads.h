@@ -66,9 +66,9 @@ typedef struct th_container_s {
         } while (0)\
 
 /* contain the next numeric id to give the next new thread */
-static int next_id = 0;
+static volatile int next_id = 0;
 /* index for the round rubin scheduling method - temporary untill part 2-3 */
-static int scheduler_index = 0;
+static volatile int scheduler_index = 0;
 
 /* create machine context which can later be used to save & restore threads
  * Returns:new thread ID or -1 if error
