@@ -21,6 +21,8 @@ typedef enum state_e {
 typedef struct mctx_st {
     ucontext_t uc;
     void* threadStack;
+    int priority;
+    int initPriority;
     tID id;
 } mctx_t, *mctx_t_p;
 
@@ -33,6 +35,7 @@ typedef struct threads_stats {
 } threads_stats_t,*threads_stats_t_p;
 
 typedef struct th_container_s {
+    const mctx_t_p lastRunThread;
     node_t_p container;
     node_t_p stats;
 } th_container_t, *th_container_t_p;
@@ -58,7 +61,6 @@ typedef struct th_container_s {
 
 /* contain the next numeric id to give the next new thread */
 static int next_id = 0;
-
 /* index for the round rubin scheduling method - temporary untill part 2-3 */
 static int scheduler_index = 0;
 

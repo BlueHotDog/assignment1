@@ -43,7 +43,7 @@ typedef char* string;
 # define assert(expr)							\
   ((expr)								\
    ? __ASSERT_VOID_CAST (0)						\
-   : printf("=========assertion failed on line:%d in file:%s\n",__LINE__,__FILE__))
+   : exit(printf("=========assertion failed on line:%d\t file:%s\n",__LINE__,__FILE__)))
 #else
     # define assert(expr) ASSERT_VOID_CAST (0)
 #endif

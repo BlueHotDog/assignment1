@@ -6,7 +6,6 @@
                    projectFiles="true">
       <itemPath>fileHandler.h</itemPath>
       <itemPath>globalDefs.h</itemPath>
-      <itemPath>global_def.h</itemPath>
       <itemPath>jobs.h</itemPath>
       <itemPath>linkedList.h</itemPath>
       <itemPath>tests.h</itemPath>

@@ -1,5 +1,4 @@
 #include "jobs.h"
-#include "../Assignment1-backup/jobs.h"
 
 boolean hasPendingJobs (tID threadId)
 {

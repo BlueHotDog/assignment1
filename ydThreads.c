@@ -1,5 +1,5 @@
 #include "ydThreads.h"
-#include "../Assignment1-backup/globalDefs.h"
+#include "globalDefs.h"
 
 int mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func) {
     /* fetch current context */
@@ -151,7 +151,7 @@ void threads_start_with_ui(mctx_t_p ui_thread) {
 
 void thread_yield(int pInfo, int statInfo) {
     if (DEBUG) printf("thread %d yielding\n", current_thread_id()-1);
-    increase_switch_wait_for_all_except(current_thread_id());
+    increase_switch_wait_for_all_except(current_thread_id());//TODO:do not increase for dead threads
     increase_jobs_wait_for_all_except(current_thread_id(),statInfo);
     state = ENQ_THREAD;
     MCTX_SAVE(current_thread);

@@ -12,6 +12,17 @@
 
 void runThread() {
     int jobsDone = 0;
+    node_t_p node = container->stats;
+    assert(node);
+    while (node) {
+        if (THREAD_STATS(node)->id == current_thread_id())
+        {
+            THREAD_STATS(node)->curr_jobs_wait=0;
+            THREAD_STATS(node)->max_jobs_wait=0;
+            break;
+        }
+        node = node->next;
+    }
     while (hasPendingJobs(current_thread->id - 1)) {
         tID jobId = getJobForThread(current_thread->id - 1);
         if (jobId != NULL_TID) {
@@ -21,6 +32,7 @@ void runThread() {
             if (DEBUG) printf("Thread %d will wait because there is no free job for him to execute\n", current_thread->id - 1);
         }
         thread_yield(0, jobsDone);
+
         jobsDone = 0;
     }
     thread_term();
@@ -32,7 +44,7 @@ mctx_t_p create_ui_thread(void* ui_func) {
     mctx_t_p new_thread = malloc(sizeof (mctx_t));
     new_thread->threadStack = new_thread_stack;
     mctx_create(new_thread, ui_func, NULL, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE), NULL);
-    next_id--; //a hack to fix the iteration jump
+    next_id--;
     ui_thread = new_thread;
     return new_thread;
 }
@@ -41,7 +53,7 @@ void ui() {
     string command = malloc(MAX_INPUT_LENGTH);
     string parameter = malloc(MAX_INPUT_LENGTH);
 #ifdef DEBUG
-    readFile("/home/danni/test", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
+    readFile("/home/yanivdu/Desktop/OS-Assignment-1/file.txt", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
     if (DEBUG) printData();
 #endif
     while (strcmp(command, "exit") != 0) {
@@ -78,11 +90,11 @@ void ui() {
             int res = maximal_switch_wait();
             printf("%d\n", res);
         } else if (strcmp(command, "MJW") == 0) {//=========================MJW===================================
-            int res = maximal_switch_wait();
+            int res = maximal_jobs_wait();
             printf("%d\n", res);
         } else if (strcmp(command, "AJW") == 0) {//=========================AJW===================================
             float res = avarage_jobs_wait();
-            printf("%d\n", res);
+            printf("%f\n", res);
         } else if (strcmp(command, "tasks") == 0) {//=========================tasks===================================
             int res = total_jobs_wait();
             printf("%d\n", res);
