@@ -27,8 +27,6 @@ typedef char* string;
 
 /* thread stack size */
 #define MAX_STACK_SIZE 4000
-//#define TRUE 1
-//#define FALSE 0
 #define DEBUG 1
 #define MAX_INPUT_LENGTH 50
 //#define NULL ((void *)0)

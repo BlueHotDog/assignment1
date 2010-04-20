@@ -113,7 +113,7 @@ void thread_manager_init(void* arg, ucontext_t* ret_thread) {
         manager_thread = malloc(sizeof (mctx_t));
         current_thread = malloc(sizeof (mctx_t));
         assert(manager_thread && current_thread);
-        void* manager_stack = malloc(sizeof (char) * MAX_STACK_SIZE);
+        void* manager_stack = calloc(MAX_STACK_SIZE, sizeof(void));
         assert(manager_stack);
         mctx_create(manager_thread, &manager, arg, manager_stack, (sizeof (char) * MAX_STACK_SIZE), ret_thread);
         if (!container)
@@ -125,7 +125,7 @@ void thread_manager_init(void* arg, ucontext_t* ret_thread) {
 int create_thread(void (*sf_addr)(), void *sf_arg) {
     int threadID = -1;
     do {
-        void* new_thread_stack = malloc(sizeof (char) * MAX_STACK_SIZE);
+        void* new_thread_stack = calloc(MAX_STACK_SIZE, sizeof (void));
         if (!new_thread_stack) //not enough memory
             break;
         mctx_t_p new_thread = malloc(sizeof (mctx_t));
@@ -138,7 +138,7 @@ int create_thread(void (*sf_addr)(), void *sf_arg) {
             free(new_thread_stack);
             break;
         }
-        threadID = mctx_create(new_thread, sf_addr, sf_arg, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE), NULL);
+        threadID = mctx_create(new_thread, sf_addr, sf_arg, new_thread_stack, (sizeof (void) * MAX_STACK_SIZE), NULL);
         if (!container)
             container = malloc(sizeof (th_container_t));
 

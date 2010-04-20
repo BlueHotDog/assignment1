@@ -40,7 +40,7 @@ void runThread() {
 mctx_t_p ui_thread;
 
 mctx_t_p create_ui_thread(void* ui_func) {
-    void* new_thread_stack = malloc(sizeof (char) * MAX_STACK_SIZE);
+    void* new_thread_stack = calloc(MAX_STACK_SIZE, sizeof(void));
     mctx_t_p new_thread = malloc(sizeof (mctx_t));
     new_thread->threadStack = new_thread_stack;
     mctx_create(new_thread, ui_func, NULL, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE), NULL);
