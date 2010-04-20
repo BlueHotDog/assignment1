@@ -16,7 +16,7 @@ typedef int tID;
 typedef enum op_status {
     OP_SUCCESS=1,
     OP_FAIL=-1,
-    OP_DONE
+    OP_DONE=3
 } op_status;
 typedef char boolean;
 #define false 0
