@@ -18,11 +18,17 @@ typedef enum state_e {
     TERM_THREAD,
 } state_t;
 
+typedef enum run_e {
+    RR = 1,
+    PB = 2,
+    YD = 3,
+} run_t;
+
 typedef struct mctx_st {
+//    int priority;
+//    int initPriority;
     ucontext_t uc;
     void* threadStack;
-    int priority;
-    int initPriority;
     tID id;
 } mctx_t, *mctx_t_p;
 
@@ -32,7 +38,7 @@ typedef struct threads_stats {
     int max_jobs_wait;
     int curr_jobs_wait;
     tID id;
-} threads_stats_t,*threads_stats_t_p;
+} threads_stats_t, *threads_stats_t_p;
 
 typedef struct th_container_s {
     const mctx_t_p lastRunThread;
@@ -67,7 +73,7 @@ static int scheduler_index = 0;
 /* create machine context which can later be used to save & restore threads
  * Returns:new thread ID or -1 if error
  */
-int mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg,void *sk_addr, const size_t sk_size, ucontext_t* ret_func);
+tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func);
 //TODO:removes a thread from the list and memory
 op_status delete_thread(const tID threadID);
 /* This function receives as arguments a pointer to the thread’s main function and a pointer to
@@ -91,7 +97,7 @@ void thread_yield(int pInfo, int statInfo);
 void thread_term();
 
 /* Initializes the manager and the thread container data structure */
-void thread_manager_init(void* arg,ucontext_t* ret_func);
+void thread_manager_init(void* arg, ucontext_t* ret_func);
 
 /* This function starts the user space threads. All it does is simply let the manager run
  * (restores the manager’s context) */
@@ -102,7 +108,10 @@ void threads_start_with_ui(mctx_t_p ui_thread);
 int switches_wait(tID threadID);
 
 /* scheduler is responsable to choose one thread from the container list*/
-mctx_t_p scheduler(th_container_t_p container);
+mctx_t_p scheduler();
+mctx_t_p scheduler_rr();
+mctx_t_p scheduler_pb();
+mctx_t_p scheduler_yd();
 
 /* manager is the main function of the manager_thread
  * all threads are comunicating with this the manager_thread thread 
@@ -122,7 +131,7 @@ threads_stats_t_p get_thread_stats_byID(const IN tID threadID);
 //prints thread info
 void containerToString(const th_container_t_p const threadContainer);
 void increase_switch_wait_for_all_except(tID threadID);
-void increase_jobs_wait_for_all_except(tID threadID,int amount);
+void increase_jobs_wait_for_all_except(tID threadID, int amount);
 int maximal_switch_wait();
 
 int jobs_wait(tID threadID);

@@ -29,6 +29,7 @@ node_t_p list_insert_beginning(node_t_p list, void *data) {
 }
 
 op_status list_remove(node_t_p list, tID id) {
+    //TODO: fix this..
     if (((mctx_t_p) list->data)->id == id)
     {
         node_t_p node = list->next;
