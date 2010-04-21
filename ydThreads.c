@@ -92,11 +92,13 @@ void manager() {
         } else if (state == TERM_THREAD) {
             tID saved_id = current_thread->id;
             ASSERT_PRINT("THERM_THREAD state received, terminating thread id: %d\n", current_thread->id - 1);
-            op_status status = list_remove(container->container, current_thread->id);
+            op_status status = list_remove_thread(container->container, current_thread->id);
+            //free_thread(current_thread);
             if (status == OP_FAIL) {
                 printf("ERROR fail to remove node at list_remove function\n");
                 exit(5);
             } else if (status == OP_DONE) {
+                //free(container->container);
                 container->container = NULL;
                 ASSERT_PRINT("removed thread id: %d and the container is empty!\n", saved_id - 1);
             } else {
@@ -180,6 +182,7 @@ void threads_start() {
 
 void threads_start_with_ui(mctx_t_p ui_thread) {
     ASSERT_PRINT("threads_start with ui_thread param\n");
+    ASSERT(ui_thread);
     state = ENQ_THREAD;
     MCTX_SAVE(ui_thread);
     if (state == ENQ_THREAD) {
@@ -381,4 +384,10 @@ op_status delete_statistics() {
         free(stats_t_p);
         free(curr_node);
     }
+}
+void free_thread(mctx_t_p thread)
+{
+    ASSERT(thread);
+    ASSERT_PRINT("freeing thread:%d\n",thread->id);
+    free(thread);
 }

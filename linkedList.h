@@ -19,7 +19,8 @@ typedef struct node_s {
 
 node_t_p list_find(node_t_p node, int(*func)(void*,void*), void *data);
 node_t_p list_at(node_t_p list, int index);
-op_status list_remove(node_t_p list, tID id);
+op_status list_remove_thread(node_t_p list, tID id);
+op_status list_clear_all_threads(node_t_p list);
 int list_foreach(node_t_p node, int(*func)(void*));
 node_t_p list_insert_beginning(node_t_p list, void* data);
 op_status list_insert_after(node_t_p node, void* data);

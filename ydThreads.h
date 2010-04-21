@@ -151,5 +151,8 @@ th_container_t_p container;
 /* Flag indicating that the current_thread has completed. */
 static volatile state_t state;
 void reset_iterator();
+
+//Memory managment functions
+void free_thread(mctx_t_p thread);
 #endif	/* _YD_THREADS_H */
 

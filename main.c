@@ -38,19 +38,39 @@ mctx_t_p ui_thread;
 
 mctx_t_p create_ui_thread(void* ui_func) {
     void* new_thread_stack = calloc(MAX_STACK_SIZE, sizeof (void));
-    memset(new_thread_stack,0,MAX_STACK_SIZE* sizeof (void));
+    memset(new_thread_stack, 0, MAX_STACK_SIZE * sizeof (void));
     mctx_t_p new_thread = malloc(sizeof (mctx_t));
-    memset(new_thread,0,sizeof (mctx_t));
-   // new_thread->threadStack = new_thread_stack;
-    mctx_create(new_thread, ui_func, NULL, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE), NULL,0);
+    memset(new_thread, 0, sizeof (mctx_t));
+    // new_thread->threadStack = new_thread_stack;
+    mctx_create(new_thread, ui_func, NULL, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE), NULL, 0);
     next_id--;
     ui_thread = new_thread;
     return new_thread;
 }
 
+void clear_ui_thread() {
+    ASSERT(ui_thread);
+    free(ui_thread->uc.uc_stack.ss_sp);
+    free(ui_thread);
+    ui_thread = NULL;
+
+}
+void clear_manager_thread(){
+    ASSERT(manager_thread);
+    free(manager_thread->uc.uc_stack.ss_sp);
+    free(manager_thread);
+    manager_thread = NULL;
+}
+void free_memory() {
+    delete_statistics();
+    clear_ui_thread();
+    clear_manager_thread();
+    list_clear_all_threads(container->container);
+}
+
 void ui() {
-    string command = malloc(MAX_INPUT_LENGTH);
-    string parameter = malloc(MAX_INPUT_LENGTH);
+    string command = calloc(MAX_INPUT_LENGTH, sizeof (char));
+    string parameter = calloc(MAX_INPUT_LENGTH, sizeof (char));
     memset(command, 0, MAX_INPUT_LENGTH);
     memset(parameter, 0, MAX_INPUT_LENGTH);
     ASSERT_RUN(readFile("/home/danni/test", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount));
@@ -110,21 +130,19 @@ void ui() {
                 delete_statistics();
             int threadIndex = 0;
             for (threadIndex = 0; threadIndex < threadsAmount; threadIndex++) {
-                ASSERT(create_thread(runThread, 0) != -1);
+                ASSERT(create_thread(runThread, 0, 0) != -1);
             }
             threads_start_with_ui(ui_thread);
         }
     }
-}
-
-void free_memory() {
-    delete_statistics();
+    free_memory();
 }
 
 int main() {
     mctx_t_p ui_thread = create_ui_thread(ui);
     reset_iterator();
-    thread_manager_init(0, &(ui_thread->uc),0);
+    thread_manager_init(0, &(ui_thread->uc), 0);
+    ASSERT(ui_thread);
     MCTX_RESTORE(ui_thread);
     return 0;
 }
