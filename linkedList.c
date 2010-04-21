@@ -49,12 +49,10 @@ op_status list_remove_thread(node_t_p list, tID id) {
         {
             mctx_t_p data = list->data;
             free(data->uc.uc_stack.ss_sp);
-            memset(data,0,sizeof(data));
             free(data);
             free(list);
-            *list = *node;
+            container->container = node;
             return OP_SUCCESS;
-
         }
         free(((mctx_t_p)list->data)->uc.uc_stack.ss_sp);
         list->data == NULL;
