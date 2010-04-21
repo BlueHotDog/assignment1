@@ -28,7 +28,7 @@ typedef struct mctx_st {
     int priority;
     int initPriority;
     ucontext_t uc;
-//    void* threadStack;
+    void* threadStack;
     tID id;
 } mctx_t, *mctx_t_p;
 
@@ -41,12 +41,13 @@ typedef struct threads_stats {
 } threads_stats_t, *threads_stats_t_p;
 
 typedef struct th_container_s {
-    const mctx_t_p lastRunThread;
+    mctx_t_p lastRunThread;
     node_t_p container;
     node_t_p stats;
 } th_container_t, *th_container_t_p;
 
-
+typedef int PB_priority;
+typedef PB_priority* PB_priority_array;
 
 /* save machine context */
 #define MCTX_SAVE(mctx) (void)getcontext(&(mctx)->uc)
@@ -70,6 +71,10 @@ static volatile int next_id = 0;
 /* index for the round rubin scheduling method - temporary untill part 2-3 */
 static volatile int scheduler_index = 0;
 
+run_t* runType;
+/* array that holds priorities for the threads */
+PB_priority_array PB_array;
+
 /* create machine context which can later be used to save & restore threads
  * Returns:new thread ID or -1 if error
  */
@@ -83,13 +88,13 @@ op_status delete_thread(const tID threadID);
  * thread
  * RETURNS: OP_CODE or new thread ID
  */
-int create_thread(void (*sf_addr)(), void *sf_arg,int arg_count);
+int create_thread(void (*sf_addr)(), void *sf_arg,int arg_count, PB_priority priority);
 
 /* This function saves the current thread’s context and resumes the manager (restores the
  * manager’s context). The argument pInfo is related to the requested priority upon yielding
  * (see part three) and the statInfo is an argument which relates to the user’s application, and
  * allows for statistics gathering (part three) */
-void thread_yield(int pInfo, int statInfo);
+void thread_yield(int pInfo, int statInfo, boolean worked);
 
 /* Terminates the thread and transfer’s control to the manager. Note that this is the graceful
  * means to terminate a thread – an alternate means to terminate all threads is by terminating
@@ -143,6 +148,7 @@ float avarage_switch_wait();
 int total_switch_wait();
 
 op_status delete_statistics();
+mctx_t_p search_for_highest_priority_thread(int offset);
 /* global manager and current thread*/
 mctx_t_p manager_thread, current_thread;
 /* the thread container holds all thread in a list data type*/
@@ -150,9 +156,7 @@ th_container_t_p container;
 
 /* Flag indicating that the current_thread has completed. */
 static volatile state_t state;
-void reset_iterator();
 
-//Memory managment functions
-void free_thread(mctx_t_p thread);
+void reset_iterator();
 #endif	/* _YD_THREADS_H */
 

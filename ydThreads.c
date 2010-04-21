@@ -1,5 +1,6 @@
 #include "ydThreads.h"
 #include "globalDefs.h"
+#include "jobs.h"
 
 tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func,int arg_count) {
     /* fetch current context */
@@ -17,9 +18,8 @@ tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void
     return mctx->id;
 }
 
-mctx_t_p scheduler(run_t runType) {
-    switch (runType) {
-
+mctx_t_p scheduler() {
+    switch (*runType) {
         case PB:
             return scheduler_pb();
             break;
@@ -56,13 +56,39 @@ mctx_t_p scheduler_rr() {
 }
 
 mctx_t_p scheduler_pb() {
-
+    mctx_t_p thread_to_return;
+    int offset;
+    if(container->lastRunThread == NULL_THREAD){
+        offset = 0;
+    }
+    else {
+        offset = container->lastRunThread->id -1 +1;
+        ASSERT_PRINT("offset is: %d\n", offset);
+        ASSERT(offset >= 0);
+    }
+    thread_to_return = search_for_highest_priority_thread(offset);
+    container->lastRunThread = thread_to_return;
+    return thread_to_return;
 }
 
 mctx_t_p scheduler_yd() {
 
 }
 
+mctx_t_p search_for_highest_priority_thread(int offset) {
+    mctx_t_p highest_priority_thread = NULL_THREAD;
+    PB_priority max_priority = MIN_PRIORITY -1;
+    int i=0;
+    for(i; i<threadsAmount; i++) {
+        node_t_p current_node = list_at(container->container, (i+offset) % threadsAmount);
+        PB_priority thread_priority = ((mctx_t_p)(current_node->data))->priority;
+        if(thread_priority > max_priority) {
+            max_priority = thread_priority;
+            highest_priority_thread = (mctx_t_p) current_node->data;
+        }
+    }
+    return highest_priority_thread;
+}
 void manager() {
     ASSERT_PRINT("%s\n", "enter manager function");
     if (&container == NULL) {
@@ -70,13 +96,13 @@ void manager() {
         exit(-1);
     }
     while (!(list_is_empty(container->container))) {
-        mctx_t_p curr_thread_pointer = scheduler(RR);
+        mctx_t_p curr_thread_pointer = scheduler();
         if (curr_thread_pointer == NULL) {
             ASSERT_PRINT("no more theards in the list, exiting the tread manager and gracefully terminating run.\n");
             return;
         }
         current_thread = curr_thread_pointer;
-        ASSERT_PRINT("swapping manager with current_thread id %d\n", current_thread->id - 1);
+        ASSERT_PRINT("swapping manager with current_thread id %d\n", current_thread->id -1);
         state = ENQ_THREAD;
         MCTX_SAVE(manager_thread);
         if (state == ENQ_THREAD) {
@@ -92,13 +118,11 @@ void manager() {
         } else if (state == TERM_THREAD) {
             tID saved_id = current_thread->id;
             ASSERT_PRINT("THERM_THREAD state received, terminating thread id: %d\n", current_thread->id - 1);
-            op_status status = list_remove_thread(container->container, current_thread->id);
-            //free_thread(current_thread);
+            op_status status = list_remove(container->container, current_thread->id);
             if (status == OP_FAIL) {
                 printf("ERROR fail to remove node at list_remove function\n");
                 exit(5);
             } else if (status == OP_DONE) {
-                //free(container->container);
                 container->container = NULL;
                 ASSERT_PRINT("removed thread id: %d and the container is empty!\n", saved_id - 1);
             } else {
@@ -136,7 +160,7 @@ void thread_manager_init(void* arg, ucontext_t* ret_thread,int arg_count) {
     ASSERT(container && manager_thread && current_thread);
 }
 
-int create_thread(void (*sf_addr)(), void *sf_arg,int arg_count) {
+int create_thread(void (*sf_addr)(), void *sf_arg,int arg_count, PB_priority priority) {
     int threadID = -1;
     do {
         void* new_thread_stack = calloc(MAX_STACK_SIZE, sizeof (void));
@@ -144,8 +168,8 @@ int create_thread(void (*sf_addr)(), void *sf_arg,int arg_count) {
             break;
         mctx_t_p new_thread = malloc(sizeof (mctx_t));
 
-        new_thread->initPriority = 0;
-        new_thread->priority = 0;
+        new_thread->initPriority = priority;
+        new_thread->priority = priority;
 
         if (!new_thread) //error handling
         {
@@ -182,7 +206,6 @@ void threads_start() {
 
 void threads_start_with_ui(mctx_t_p ui_thread) {
     ASSERT_PRINT("threads_start with ui_thread param\n");
-    ASSERT(ui_thread);
     state = ENQ_THREAD;
     MCTX_SAVE(ui_thread);
     if (state == ENQ_THREAD) {
@@ -193,11 +216,16 @@ void threads_start_with_ui(mctx_t_p ui_thread) {
     state = RUN_THREAD;
 }
 
-void thread_yield(int pInfo, int statInfo) {
+void thread_yield(int pInfo, int statInfo, boolean worked) {
     ASSERT_PRINT("thread %d yielding\n", current_thread_id() - 1);
     increase_switch_wait_for_all_except(current_thread_id()); //TODO:do not increase for dead threads
     increase_jobs_wait_for_all_except(current_thread_id(), statInfo);
     state = ENQ_THREAD;
+    if(worked){
+        current_thread->priority = current_thread->initPriority;
+    }
+    else if(current_thread->priority > 0)
+        current_thread->priority--;
     MCTX_SAVE(current_thread);
     if (state == ENQ_THREAD) {
         state = RUN_THREAD;
@@ -384,10 +412,4 @@ op_status delete_statistics() {
         free(stats_t_p);
         free(curr_node);
     }
-}
-void free_thread(mctx_t_p thread)
-{
-    ASSERT(thread);
-    ASSERT_PRINT("freeing thread:%d\n",thread->id);
-    free(thread);
 }

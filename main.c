@@ -25,11 +25,11 @@ void runThread() {
         if (jobId != NULL_TID) {
             execJob(jobId);
             jobsDone++;
+            thread_yield(0, jobsDone, true);
         } else {
             ASSERT_PRINT("Thread %d will wait because there is no free job for him to execute\n", current_thread->id - 1);
+            thread_yield(0, jobsDone, false);
         }
-        thread_yield(0, jobsDone);
-
         jobsDone = 0;
     }
     thread_term();
@@ -38,42 +38,22 @@ mctx_t_p ui_thread;
 
 mctx_t_p create_ui_thread(void* ui_func) {
     void* new_thread_stack = calloc(MAX_STACK_SIZE, sizeof (void));
-    memset(new_thread_stack, 0, MAX_STACK_SIZE * sizeof (void));
+    memset(new_thread_stack,0,MAX_STACK_SIZE* sizeof (void));
     mctx_t_p new_thread = malloc(sizeof (mctx_t));
-    memset(new_thread, 0, sizeof (mctx_t));
-    // new_thread->threadStack = new_thread_stack;
-    mctx_create(new_thread, ui_func, NULL, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE), NULL, 0);
+    memset(new_thread,0,sizeof (mctx_t));
+   // new_thread->threadStack = new_thread_stack;
+    mctx_create(new_thread, ui_func, NULL, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE), NULL,0);
     next_id--;
     ui_thread = new_thread;
     return new_thread;
 }
 
-void clear_ui_thread() {
-    ASSERT(ui_thread);
-    free(ui_thread->uc.uc_stack.ss_sp);
-    free(ui_thread);
-    ui_thread = NULL;
-
-}
-void clear_manager_thread(){
-    ASSERT(manager_thread);
-    free(manager_thread->uc.uc_stack.ss_sp);
-    free(manager_thread);
-    manager_thread = NULL;
-}
-void free_memory() {
-    delete_statistics();
-    clear_ui_thread();
-    clear_manager_thread();
-    list_clear_all_threads(container->container);
-}
-
 void ui() {
-    string command = calloc(MAX_INPUT_LENGTH, sizeof (char));
-    string parameter = calloc(MAX_INPUT_LENGTH, sizeof (char));
+    string command = malloc(MAX_INPUT_LENGTH);
+    string parameter = malloc(MAX_INPUT_LENGTH);
     memset(command, 0, MAX_INPUT_LENGTH);
     memset(parameter, 0, MAX_INPUT_LENGTH);
-    ASSERT_RUN(readFile("/home/danni/test", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount));
+    ASSERT_RUN(readFile("/home/yanivdu/Desktop/OS-Assignment-1/file.txt", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount));
     ASSERT_RUN(printData());
 
     while (strcmp(command, "exit") != 0) {
@@ -125,24 +105,55 @@ void ui() {
             int total = total_switch_wait();
             printf("%d\n", total);
         } else if (strcmp(command, "run") == 0) {
+            runType = malloc(sizeof(run_t));
             ASSERT(container && deps && jobs && jobsForThreads && threadsAmount);
             if (container->stats)
                 delete_statistics();
+                        string sub_command = malloc(MAX_INPUT_LENGTH);
+            memset(sub_command, 0, MAX_INPUT_LENGTH);;
+            scanf("%s", sub_command);
+            if(strcmp(sub_command, "PB") == 0 ||strcmp(sub_command, "Pb") == 0 || strcmp(sub_command, "pb") == 0) {
+                *runType = PB;
+                PB_array = calloc(threadsAmount, sizeof(PB_priority));
+                int i=1;
+                scanf("%s", sub_command);
+                PB_array[0] = atoi(sub_command);
+                if(strcmp(sub_command, "-1") == 0)
+                  for(i=1; i<threadsAmount; i++) {
+                    PB_array[i] = i+1; //because there is an one offset between the thread index and thread's id
+                }
+                else for(i; i<threadsAmount; i++) {
+                    scanf("%s", sub_command);
+                    PB_array[i] = atoi(sub_command);
+                }
+                ASSERT_PRINT("The priority array is:");
+                for(i=0; i<threadsAmount; i++) {
+                    ASSERT_PRINT("%d ",PB_array[i]);
+                }
+                ASSERT_PRINT("\n");
+            }
+            else {
+                *runType = RR;
+                memset(PB_array, 0, threadsAmount);
+            }
             int threadIndex = 0;
             for (threadIndex = 0; threadIndex < threadsAmount; threadIndex++) {
-                ASSERT(create_thread(runThread, 0, 0) != -1);
+                ASSERT(create_thread(runThread, 0, 0, PB_array[threadIndex]) != -1);
             }
             threads_start_with_ui(ui_thread);
         }
     }
-    free_memory();
+}
+
+void free_memory() {
+    delete_statistics();
+    free(runType);
 }
 
 int main() {
     mctx_t_p ui_thread = create_ui_thread(ui);
     reset_iterator();
-    thread_manager_init(0, &(ui_thread->uc), 0);
-    ASSERT(ui_thread);
+    thread_manager_init(0, &(ui_thread->uc),0);
     MCTX_RESTORE(ui_thread);
     return 0;
 }

@@ -28,52 +28,38 @@ node_t_p list_insert_beginning(node_t_p list, void *data) {
      	return newnode;
 }
 
-op_status list_clear_all_threads(node_t_p list)
-{
-    while(list)
-    {
-        node_t_p node = list->next;
-        free(((mctx_t_p)list->next->data)->uc.uc_stack.ss_sp);
-        free(((mctx_t_p)list->next->data));
-        free(list);
-        list = node;
-        node = NULL;
-    }
-}
-op_status list_remove_thread(node_t_p list, tID id) {
+op_status list_remove(node_t_p list, tID id) {
     //TODO: fix this..
-    if (((mctx_t_p) list->data)->id== id)
+    if (((mctx_t_p) list->data)->id == id)
     {
         node_t_p node = list->next;
         if (node)
         {
             mctx_t_p data = list->data;
-            free(data->uc.uc_stack.ss_sp);
-            memset(data,0,sizeof(data));
+            list->data = list->next->data;
+            list->next = list->next->next;
             free(data);
-            free(list);
-            *list = *node;
+            free(node);
+            //tID tempId = ((mctx_t_p) list->data)->id;
+            //((mctx_t_p) list->data)->id = -1;
+            //opp_status status = list_remove(list->next, ((mctx_t_p) list->next->data)->id);
+            //((mctx_t_p) list->data)->id = tempId;
             return OP_SUCCESS;
 
         }
-        free(((mctx_t_p)list->data)->uc.uc_stack.ss_sp);
+        mctx_t_p data = list->data;
         list->data == NULL;
-        free (((mctx_t_p)list->data));
+        free (data);
         free (list);
         return OP_DONE;
     }
     node_t_p p_list = list;
-
     while(p_list->next && ((mctx_t_p)p_list->next->data)->id != id)
         p_list = p_list->next;
     if(p_list->next && ((mctx_t_p)p_list->next->data)->id == id) {
-
         node_t_p node = p_list->next;
         p_list->next = node->next;
-        free(((mctx_t_p)node->data)->uc.uc_stack.ss_sp);
-        free(((mctx_t_p)node->data));
         free(node);
-        node = NULL;
         return OP_SUCCESS;
     } else return OP_FAIL;
 }
@@ -96,7 +82,10 @@ node_t_p list_find(node_t_p node, int(*func)(void*,void*), void *data) {
 }
 
 node_t_p list_at(node_t_p list, int index) {
-    ASSERT(list);
+    if (list == NULL) {
+        printf ("ERROR list in NULL in list_at function at LinkList.c\n");
+        return NULL;
+    }
     node_t_p current = list;
     int i= 0;
     if (index < 0)
@@ -108,7 +97,7 @@ node_t_p list_at(node_t_p list, int index) {
             return NULL;
     }
     if (current != NULL)
-        return current->data;
+        return current;
     else
         return NULL;
 }
