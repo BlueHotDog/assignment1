@@ -36,21 +36,11 @@ op_status list_remove(node_t_p list, tID id) {
         if (node)
         {
             mctx_t_p data = list->data;
-<<<<<<< HEAD:linkedList.c
-            list->data = list->next->data;
-            list->next = list->next->next;
-            free(data);
-            free(node);
-            //tID tempId = ((mctx_t_p) list->data)->id;
-            //((mctx_t_p) list->data)->id = -1;
-            //opp_status status = list_remove(list->next, ((mctx_t_p) list->next->data)->id);
-            //((mctx_t_p) list->data)->id = tempId;
-=======
+
             free(data->uc.uc_stack.ss_sp);
             free(data);
             free(list);
             container->container = node;
->>>>>>> Danni:linkedList.c
             return OP_SUCCESS;
         }
         mctx_t_p data = list->data;

@@ -48,8 +48,6 @@ mctx_t_p create_ui_thread(void* ui_func) {
     return new_thread;
 }
 
-<<<<<<< HEAD:main.c
-=======
 void clear_ui_thread() {
     ASSERT(ui_thread);
     free(ui_thread->uc.uc_stack.ss_sp);
@@ -90,7 +88,6 @@ void free_memory() {
     clear_container();
 }
 
->>>>>>> Danni:main.c
 void ui() {
     string command = malloc(MAX_INPUT_LENGTH);
     string parameter = malloc(MAX_INPUT_LENGTH);
@@ -188,17 +185,9 @@ void ui() {
             threads_start_with_ui(ui_thread);
         }
     }
-<<<<<<< HEAD:main.c
-}
-
-void free_memory() {
-    delete_statistics();
-    free(runType);
-=======
     free(command);
     free(parameter);
     free_memory();
->>>>>>> Danni:main.c
 }
 
 int main() {
