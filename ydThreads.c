@@ -121,7 +121,7 @@ void manager() {
         } else if (state == TERM_THREAD) {
             tID saved_id = current_thread->id;
             ASSERT_PRINT("THERM_THREAD state received, terminating thread id: %d\n", current_thread->id);
-            op_status status = list_remove(container->container, current_thread->id);
+            op_status status = list_remove_thread(container->container, current_thread->id);
             if (status == OP_FAIL) {
                 printf("ERROR fail to remove node at list_remove function\n");
                 exit(5);

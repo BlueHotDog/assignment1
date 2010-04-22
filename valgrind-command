@@ -1,2 +1,2 @@
-valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=yes --suppressions=../../../ignore ./assignment1 
+valgrind --tool=memcheck --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=yes --suppressions=ignore ./dist/Debug/GNU-Linux-x86/assignment1 
 

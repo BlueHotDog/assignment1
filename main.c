@@ -8,7 +8,7 @@
 #include "ydThreads.h"
 #include "fileHandler.h"
 #include "jobs.h"
-
+static int read_from_file_thread_amount = -1;
 void runThread() {
     int jobsDone = 0;
     node_t_p node = container->stats;
@@ -74,10 +74,14 @@ void free_file_info()
     free(deps);
     ASSERT(jobs);
     free(jobs);
-    for (i = 0; i != threadsAmount; i++) {
+    for (i = 0; i < read_from_file_thread_amount; i++) {
             free(jobsForThreads[i].jobs);
     }
     free(jobsForThreads);
+}
+void free_pb()
+{
+    free(PB_array);
 }
 void free_memory() {
     delete_statistics();
@@ -86,6 +90,7 @@ void free_memory() {
     list_clear_all_threads(container->container);
     free_file_info();
     clear_container();
+    free_pb();
 }
 
 void ui() {
@@ -147,9 +152,10 @@ void ui() {
         } else if (strcmp(command, "run") == 0) {
             runType = malloc(sizeof(run_t));
             ASSERT(container && deps && jobs && jobsForThreads && threadsAmount);
+            read_from_file_thread_amount = threadsAmount;
             if (container->stats)
                 delete_statistics();
-                        string sub_command = malloc(MAX_INPUT_LENGTH);
+            string sub_command = malloc(MAX_INPUT_LENGTH);
             memset(sub_command, 0, MAX_INPUT_LENGTH);;
             scanf("%s", sub_command);
             if(strcmp(sub_command, "PB") == 0 ||strcmp(sub_command, "Pb") == 0 || strcmp(sub_command, "pb") == 0) {
@@ -171,6 +177,7 @@ void ui() {
                     ASSERT_PRINT("%d ",PB_array[i]);
                 }
                 ASSERT_PRINT("\n");
+                free(sub_command);
             }
             else {
                 *runType = RR;
@@ -185,6 +192,8 @@ void ui() {
             threads_start_with_ui(ui_thread);
         }
     }
+
+    if(runType) free(runType);
     free(command);
     free(parameter);
     free_memory();
