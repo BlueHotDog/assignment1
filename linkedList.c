@@ -28,34 +28,50 @@ node_t_p list_insert_beginning(node_t_p list, void *data) {
      	return newnode;
 }
 
-op_status list_remove(node_t_p list, tID id) {
+op_status list_clear_all_threads(node_t_p list)
+{
+    while(list)
+    {
+        node_t_p node = list->next;
+        free(((mctx_t_p)list->next->data)->uc.uc_stack.ss_sp);
+        free(((mctx_t_p)list->next->data));
+        free(list);
+        list = node;
+        node = NULL;
+    }
+}
+op_status list_remove_thread(node_t_p list, tID id) {
     //TODO: fix this..
-    if (((mctx_t_p) list->data)->id == id)
+    if (((mctx_t_p) list->data)->id== id)
     {
         node_t_p node = list->next;
         if (node)
         {
             mctx_t_p data = list->data;
-
             free(data->uc.uc_stack.ss_sp);
             free(data);
             free(list);
             container->container = node;
             return OP_SUCCESS;
         }
-        mctx_t_p data = list->data;
+        free(((mctx_t_p)list->data)->uc.uc_stack.ss_sp);
         list->data == NULL;
-        free (data);
+        free (((mctx_t_p)list->data));
         free (list);
         return OP_DONE;
     }
     node_t_p p_list = list;
+
     while(p_list->next && ((mctx_t_p)p_list->next->data)->id != id)
         p_list = p_list->next;
     if(p_list->next && ((mctx_t_p)p_list->next->data)->id == id) {
+
         node_t_p node = p_list->next;
         p_list->next = node->next;
+        free(((mctx_t_p)node->data)->uc.uc_stack.ss_sp);
+        free(((mctx_t_p)node->data));
         free(node);
+        node = NULL;
         return OP_SUCCESS;
     } else return OP_FAIL;
 }
@@ -78,10 +94,7 @@ node_t_p list_find(node_t_p node, int(*func)(void*,void*), void *data) {
 }
 
 node_t_p list_at(node_t_p list, int index) {
-    if (list == NULL) {
-        printf ("ERROR list in NULL in list_at function at LinkList.c\n");
-        return NULL;
-    }
+    ASSERT(list);
     node_t_p current = list;
     int i= 0;
     if (index < 0)
