@@ -138,7 +138,9 @@ void ui() {
             }
             int threadIndex = 0;
             for (threadIndex = 0; threadIndex < threadsAmount; threadIndex++) {
-                ASSERT(create_thread(runThread, 0, 0, PB_array[threadIndex]) != -1);
+                if(create_thread(runThread, 0, 0, PB_array[threadIndex]) == -1) {
+                    exit (67);
+                }
             }
             threads_start_with_ui(ui_thread);
         }

@@ -41,7 +41,7 @@ typedef struct threads_stats {
 } threads_stats_t, *threads_stats_t_p;
 
 typedef struct th_container_s {
-    mctx_t_p lastRunThread;
+    tID lastTunThreadID;
     node_t_p container;
     node_t_p stats;
 } th_container_t, *th_container_t_p;

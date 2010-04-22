@@ -58,16 +58,18 @@ mctx_t_p scheduler_rr() {
 mctx_t_p scheduler_pb() {
     mctx_t_p thread_to_return;
     int offset;
-    if(container->lastRunThread == NULL_THREAD){
+    if(container->lastTunThreadID > NULL_TID){
         offset = 0;
     }
     else {
-        offset = container->lastRunThread->id -1 +1;
+        offset = container->lastTunThreadID;
         ASSERT_PRINT("offset is: %d\n", offset);
-        ASSERT(offset >= 0);
+
+        ASSERT(offset >=0);
     }
     thread_to_return = search_for_highest_priority_thread(offset);
-    container->lastRunThread = thread_to_return;
+    ASSERT(thread_to_return);
+    container->lastTunThreadID = thread_to_return->id;
     return thread_to_return;
 }
 
@@ -81,6 +83,7 @@ mctx_t_p search_for_highest_priority_thread(int offset) {
     int i=0;
     for(i; i<threadsAmount; i++) {
         node_t_p current_node = list_at(container->container, (i+offset) % threadsAmount);
+        ASSERT(current_node);
         PB_priority thread_priority = ((mctx_t_p)(current_node->data))->priority;
         if(thread_priority > max_priority) {
             max_priority = thread_priority;
@@ -102,12 +105,12 @@ void manager() {
             return;
         }
         current_thread = curr_thread_pointer;
-        ASSERT_PRINT("swapping manager with current_thread id %d\n", current_thread->id -1);
+        ASSERT_PRINT("swapping manager with current_thread id %d\n", current_thread->id);
         state = ENQ_THREAD;
         MCTX_SAVE(manager_thread);
         if (state == ENQ_THREAD) {
             state = RUN_THREAD;
-            ASSERT_PRINT("resuming thread id: %d\n", current_thread->id - 1);
+            ASSERT_PRINT("resuming thread id: %d\n", current_thread->id);
             threads_stats_t_p stats;
             stats = get_thread_stats_byID(current_thread->id);
             ASSERT(stats);
@@ -117,16 +120,19 @@ void manager() {
             MCTX_RESTORE(current_thread);
         } else if (state == TERM_THREAD) {
             tID saved_id = current_thread->id;
-            ASSERT_PRINT("THERM_THREAD state received, terminating thread id: %d\n", current_thread->id - 1);
+            ASSERT_PRINT("THERM_THREAD state received, terminating thread id: %d\n", current_thread->id);
             op_status status = list_remove(container->container, current_thread->id);
             if (status == OP_FAIL) {
                 printf("ERROR fail to remove node at list_remove function\n");
                 exit(5);
             } else if (status == OP_DONE) {
                 container->container = NULL;
-                ASSERT_PRINT("removed thread id: %d and the container is empty!\n", saved_id - 1);
+                threadsAmount = -1;
+                scheduler_index = -1;
+                ASSERT_PRINT("removed thread id: %d and the container is empty!\n", saved_id);
             } else {
                 scheduler_index--;
+                threadsAmount--;
                 ASSERT_PRINT("removed thread id: %d\n", saved_id);
             }
         }
