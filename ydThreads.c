@@ -146,10 +146,12 @@ void thread_manager_init(void* arg, ucontext_t* ret_thread,int arg_count) {
         manager_thread = malloc(sizeof (mctx_t));
         memset(manager_thread, 0, sizeof (mctx_t));
 
+/*
         current_thread = malloc(sizeof (mctx_t));
         memset(current_thread, 0, sizeof (mctx_t));
 
         ASSERT(manager_thread && current_thread);
+*/
         
         void* manager_stack = calloc(MAX_STACK_SIZE, sizeof (void));
         memset(manager_stack, 0, MAX_STACK_SIZE * sizeof (void));
@@ -163,7 +165,7 @@ void thread_manager_init(void* arg, ucontext_t* ret_thread,int arg_count) {
         }
     } else
         ASSERT_PRINT("manager thread already initialized\n");
-    ASSERT(container && manager_thread && current_thread);
+    ASSERT(container && manager_thread);
 }
 
 int create_thread(void (*sf_addr)(), void *sf_arg,int arg_count, PB_priority priority) {

@@ -48,6 +48,49 @@ mctx_t_p create_ui_thread(void* ui_func) {
     return new_thread;
 }
 
+<<<<<<< HEAD:main.c
+=======
+void clear_ui_thread() {
+    ASSERT(ui_thread);
+    free(ui_thread->uc.uc_stack.ss_sp);
+    free(ui_thread);
+    ui_thread = NULL;
+
+}
+void clear_container()
+{
+    ASSERT(container);
+    free(container);
+}
+void clear_manager_thread(){
+    ASSERT(manager_thread);
+    free(manager_thread->uc.uc_stack.ss_sp);
+    free(manager_thread);
+    manager_thread = NULL;
+}
+void free_file_info()
+{
+    int i = 0, j = 0;
+    for (i = 0; i < jobsAmount; i++)
+        free(deps[i]);
+    free(deps);
+    ASSERT(jobs);
+    free(jobs);
+    for (i = 0; i != threadsAmount; i++) {
+            free(jobsForThreads[i].jobs);
+    }
+    free(jobsForThreads);
+}
+void free_memory() {
+    delete_statistics();
+    clear_ui_thread();
+    clear_manager_thread();
+    list_clear_all_threads(container->container);
+    free_file_info();
+    clear_container();
+}
+
+>>>>>>> Danni:main.c
 void ui() {
     string command = malloc(MAX_INPUT_LENGTH);
     string parameter = malloc(MAX_INPUT_LENGTH);
@@ -145,11 +188,17 @@ void ui() {
             threads_start_with_ui(ui_thread);
         }
     }
+<<<<<<< HEAD:main.c
 }
 
 void free_memory() {
     delete_statistics();
     free(runType);
+=======
+    free(command);
+    free(parameter);
+    free_memory();
+>>>>>>> Danni:main.c
 }
 
 int main() {
