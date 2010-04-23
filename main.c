@@ -178,6 +178,8 @@ void ui() {
         } else if (strcmp(command, "run") == 0) {
             if(container->stats)
                  delete_statistics();
+
+            PB_array = calloc(threadsAmount, sizeof (PB_priority));
             runType = malloc(sizeof (run_t));
             PB_array = calloc(threadsAmount, sizeof (PB_priority));
             ASSERT(container && deps && jobs && jobsForThreads && threadsAmount);
@@ -187,15 +189,12 @@ void ui() {
             scanf("%s", sub_command);
             if (strcmp(sub_command, "PB") == 0 || strcmp(sub_command, "pb") == 0 || strcmp(sub_command, "2") == 0) {
                 *runType = PB;
-
-
                 int i = 1;
-
                 scanf("%s", sub_command);
                 PB_array[0] = atoi(sub_command);
                 if (strcmp(sub_command, "-1") == 0)
-                    for (i = 1; i < threadsAmount; i++) {
-                        PB_array[i] = i + 1; //because there is an one offset between the thread index and thread's id
+                    for (i = 0; i < threadsAmount; i++) {
+                        PB_array[i] = i +1; //because there is an one offset between the thread index and thread's id
                     } else for (i; i < threadsAmount; i++) {
                         scanf("%s", sub_command);
                         PB_array[i] = atoi(sub_command);
