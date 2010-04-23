@@ -369,7 +369,7 @@ void threads_start_with_ui(mctx_t_p ui_thread) {
     state = RUN_THREAD;
 }
 
-void thread_yield(int pInfo, int statInfo, boolean worked) {
+void thread_yield(int pInfo, int statInfo) {
     ASSERT_PRINT("thread %d yielding\n", current_thread_id() - 1);
     increase_switch_wait_for_all_except(current_thread_id()); //TODO:do not increase for dead threads
     increase_jobs_wait_for_all_except(current_thread_id(), statInfo);

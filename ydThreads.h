@@ -11,6 +11,7 @@
 #include <ucontext.h>
 #include "globalDefs.h"
 #include "linkedList.h"
+boolean worked;
 
 typedef enum state_e {
     RUN_THREAD,
@@ -34,6 +35,7 @@ typedef struct mctx_st {
     int priority;
     int initPriority;
     ucontext_t uc;
+
     tID id;
 } mctx_t, *mctx_t_p;
 
@@ -101,7 +103,7 @@ int create_thread(void (*sf_addr)(), void *sf_arg, int arg_count, PB_priority pr
  * manager’s context). The argument pInfo is related to the requested priority upon yielding
  * (see part three) and the statInfo is an argument which relates to the user’s application, and
  * allows for statistics gathering (part three) */
-void thread_yield(int pInfo, int statInfo, boolean worked);
+void thread_yield(int pInfo, int statInfo);
 
 /* Terminates the thread and transfer’s control to the manager. Note that this is the graceful
  * means to terminate a thread – an alternate means to terminate all threads is by terminating

@@ -29,10 +29,12 @@ void runThread() {
         if (jobId != NULL_TID) {
             execJob(jobId);
             jobsDone++;
-            thread_yield(0, jobsDone, true);
+            worked = true;
+            thread_yield(0, jobsDone);
         } else {
             ASSERT_PRINT("Thread %d will wait because there is no free job for him to execute\n", current_thread->id - 1);
-            thread_yield(0, jobsDone, false);
+            worked = false;
+            thread_yield(0, jobsDone);
         }
         jobsDone = 0;
     }
