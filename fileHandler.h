@@ -12,7 +12,7 @@
 #define GET_NEXT_LINE(aLine,aFile) {\
     boolean aFoundChar = false;\
     while (!aFoundChar) {\
-        fgets(aLine, LINE_LENGTH, aFile);\
+        temp = fgets(aLine, LINE_LENGTH, aFile);\
         char* p = aLine;\
         while (*p == ' ' || *p == '\t' || *p == '\r' || *p == '\n')\
             p++;\

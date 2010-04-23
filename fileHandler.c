@@ -6,6 +6,7 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
     FILE* hFile;
     hFile = fopen(file_name, "r");
     int i=0, j = 0;
+    char* temp = 0;
     if (hFile == NULL) {
         return OP_FAIL;
     } else {

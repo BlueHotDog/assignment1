@@ -125,9 +125,9 @@ void ui() {
     ASSERT_RUN(printData());
     while (strcmp(command, "exit") != 0) {
         printf(">");
-        scanf("%s", command);
+        int temp = scanf("%s", command);
         if (strcmp(command, "load") == 0 || strcmp(command, "SW") == 0 || strcmp(command, "JW") == 0) {
-            scanf("%s", parameter);
+            temp = scanf("%s", parameter);
             if (strcmp(command, "SW") == 0) { //=============================SW==================================
                 int threadNumber = 0;
                 sscanf(parameter, "%d", &threadNumber); //converting parameter
@@ -160,7 +160,7 @@ void ui() {
             }
 
         } else if (strcmp(command, "exit") == 0) {//========================EXIT===================================
-            return;
+            break;
         } else if (strcmp(command, "MSW") == 0) {//=========================MSW===================================
             int res = maximal_switch_wait();
             printf("%d\n", res);
@@ -188,17 +188,17 @@ void ui() {
 
             string sub_command = malloc(MAX_INPUT_LENGTH);
             memset(sub_command, 0, MAX_INPUT_LENGTH);
-            scanf("%s", sub_command);
+            temp = scanf("%s", sub_command);
             if (strcmp(sub_command, "PB") == 0 || strcmp(sub_command, "pb") == 0 || strcmp(sub_command, "2") == 0) {
                 *runType = PB;
                 int i = 1;
-                scanf("%s", sub_command);
+                temp = scanf("%s", sub_command);
                 PB_array[0] = atoi(sub_command);
                 if (strcmp(sub_command, "-1") == 0)
                     for (i = 0; i < threadsAmount; i++) {
                         PB_array[i] = i +1; //because there is an one offset between the thread index and thread's id
                     } else for (i; i < threadsAmount; i++) {
-                        scanf("%s", sub_command);
+                        temp = scanf("%s", sub_command);
                         PB_array[i] = atoi(sub_command);
                     }
                 ASSERT_PRINT("The priority array is:");
