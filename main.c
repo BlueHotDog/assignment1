@@ -92,6 +92,8 @@ void free_pb() {
 }
 
 void free_memory() {
+    if(fileName) free(fileName);
+    fileName = NULL;
     delete_statistics();
     clear_ui_thread();
     clear_manager_thread();
@@ -156,7 +158,7 @@ void ui() {
             }
 
         } else if (strcmp(command, "exit") == 0) {//========================EXIT===================================
-            return;
+            break;
         } else if (strcmp(command, "MSW") == 0) {//=========================MSW===================================
             int res = maximal_switch_wait();
             printf("%d\n", res);
@@ -260,6 +262,7 @@ void ui() {
 
         readFile(fileName, &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
         reset_iterator(1);
+        free(PB_array);
         threadsAmount = read_from_file_thread_amount;
         list_clear_all_threads(container->container);
         //free_file_info();
@@ -279,8 +282,11 @@ void ui() {
         
 
     }
+
     if (parameter) free(parameter);
     parameter = NULL;
+    if(command) free(command);
+    command = NULL;
     free_memory();
 }
 
