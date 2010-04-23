@@ -139,7 +139,7 @@ void ui() {
     memset(command, 0, MAX_INPUT_LENGTH);
     memset(parameter, 0, MAX_INPUT_LENGTH);
 
-    readFile("/home/danni/test", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
+    readFile("/home/yanivdu/Desktop/OS-Assignment-1/file.txt", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
     read_from_file_thread_amount = threadsAmount;
 
     ASSERT_RUN(printData());
@@ -194,6 +194,7 @@ void ui() {
             int total = total_switch_wait();
             printf("%d\n", total);
         } else if (strcmp(command, "run") == 0) {
+            PB_array = calloc(threadsAmount, sizeof (PB_priority));
             runType = malloc(sizeof (run_t));
             ASSERT(container && deps && jobs && jobsForThreads && threadsAmount);
             
@@ -202,10 +203,7 @@ void ui() {
             scanf("%s", sub_command);
             if (strcmp(sub_command, "PB") == 0 || strcmp(sub_command, "pb") == 0 || strcmp(sub_command, "2") == 0) {
                 *runType = PB;
-				
-                PB_array = calloc(threadsAmount, sizeof (PB_priority));
-                int i = 1;
-				
+		int i = 1;		
                 scanf("%s", sub_command);
                 PB_array[0] = atoi(sub_command);
                 if (strcmp(sub_command, "-1") == 0)
