@@ -138,8 +138,10 @@ void ui() {
     string parameter = malloc(MAX_INPUT_LENGTH);
     memset(command, 0, MAX_INPUT_LENGTH);
     memset(parameter, 0, MAX_INPUT_LENGTH);
+
     readFile("/home/danni/test", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
     read_from_file_thread_amount = threadsAmount;
+
     ASSERT_RUN(printData());
 
     while (strcmp(command, "exit") != 0) {
@@ -200,8 +202,10 @@ void ui() {
             scanf("%s", sub_command);
             if (strcmp(sub_command, "PB") == 0 || strcmp(sub_command, "pb") == 0 || strcmp(sub_command, "2") == 0) {
                 *runType = PB;
+				
                 PB_array = calloc(threadsAmount, sizeof (PB_priority));
                 int i = 1;
+				
                 scanf("%s", sub_command);
                 PB_array[0] = atoi(sub_command);
                 if (strcmp(sub_command, "-1") == 0)
@@ -216,15 +220,25 @@ void ui() {
                     ASSERT_PRINT("%d ", PB_array[i]);
                 }
                 ASSERT_PRINT("\n");
-
             } else if (strcmp(sub_command, "-1") == 0) {
                 *runType = RR;
-            } else {
-
+            } else if(strcmp(sub_command, "3") == 0) {
+                *runType = YD;
+                int i=0;
+                for(i; i<threadsAmount; i++) {
+                    PB_array[i] = 100;
+                }
+            }
+            else {
+                *runType = RR;
+                int i=0;
+                for(i; i<threadsAmount; i++) {
+                    PB_array[i] = 0;
+                }
             }
             int threadIndex = 0;
             for (threadIndex = 0; threadIndex < threadsAmount; threadIndex++) {
-                if (*runType == PB) {
+                if (*runType == PB || *runType==YD) {
                     if (create_thread(runThread, 0, 0, PB_array[threadIndex]) == -1) {
                         exit(67);
                     }
