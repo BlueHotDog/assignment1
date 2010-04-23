@@ -195,6 +195,7 @@ void ui() {
             printf("%d\n", total);
         } else if (strcmp(command, "run") == 0) {
             runType = malloc(sizeof (run_t));
+            PB_array = calloc(threadsAmount, sizeof (PB_priority));
             ASSERT(container && deps && jobs && jobsForThreads && threadsAmount);
             
             string sub_command = malloc(MAX_INPUT_LENGTH);
@@ -203,7 +204,7 @@ void ui() {
             if (strcmp(sub_command, "PB") == 0 || strcmp(sub_command, "pb") == 0 || strcmp(sub_command, "2") == 0) {
                 *runType = PB;
 				
-                PB_array = calloc(threadsAmount, sizeof (PB_priority));
+                
                 int i = 1;
 				
                 scanf("%s", sub_command);
