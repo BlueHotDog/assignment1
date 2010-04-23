@@ -2,7 +2,27 @@
 #include "globalDefs.h"
 #include "jobs.h"
 
-tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func, int arg_count) {
+
+
+//void mctx_create(mctx_t *mctx, void (*sf_addr)( ), void *sf_arg, void *sk_addr,size_t sk_size)
+tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size) {
+    /* fetch current context */
+    getcontext(&(mctx->uc));
+    /* adjust to new context */
+    mctx->uc.uc_link = NULL;
+    mctx->uc.uc_stack.ss_sp = sk_addr;
+    mctx->uc.uc_stack.ss_size = sk_size;
+    mctx->uc.uc_stack.ss_flags = 0;
+    /* set new thread id to the new theard */
+    mctx->id = id_iterator();
+    ASSERT_PRINT("added new thread id: %d\n", mctx->id);
+    /* make new context */
+    makecontext(&(mctx->uc), sf_addr, 1, sf_arg);
+    return mctx->id;
+}
+
+//void mctx_create(mctx_t *mctx, void (*sf_addr)( ), void *sf_arg, void *sk_addr,size_t sk_size)
+tID mctx_create_manager(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func, int arg_count) {
     /* fetch current context */
     getcontext(&(mctx->uc));
     /* adjust to new context */
@@ -294,7 +314,7 @@ void thread_manager_init(void* arg, ucontext_t* ret_thread, int arg_count) {
         memset(manager_stack, 0, MAX_STACK_SIZE * sizeof (void));
         ASSERT(manager_stack);
 
-        mctx_create(manager_thread, &manager, arg, manager_stack, (sizeof (char) * MAX_STACK_SIZE), ret_thread, arg_count);
+        mctx_create_manager(manager_thread, &manager, arg, manager_stack, (sizeof (char) * MAX_STACK_SIZE), ret_thread, arg_count);
 
         if (!container) {
             container = malloc(sizeof (th_container_t));
@@ -307,7 +327,9 @@ void thread_manager_init(void* arg, ucontext_t* ret_thread, int arg_count) {
     ASSERT(container && manager_thread);
 }
 
-int create_thread(void (*sf_addr)(), void *sf_arg, int arg_count, PB_priority priority) {
+//  int create_thread( void (*sf_addr)(), void *sf_arg,)
+
+int create_thread(void (*sf_addr)(), void *sf_arg) {
     int threadID = -1;
     do {
         void* new_thread_stack = NULL;
@@ -317,16 +339,13 @@ int create_thread(void (*sf_addr)(), void *sf_arg, int arg_count, PB_priority pr
             break;
         mctx_t_p new_thread = malloc(sizeof (mctx_t));
 
-        new_thread->initPriority = priority;
-        if(priority < 0) exit(printf("priority is < 0!!\n"));
-        new_thread->priority = priority;
-
         if (!new_thread) //error handling
         {
             free(new_thread_stack);
             break;
         }
-        threadID = mctx_create(new_thread, sf_addr, sf_arg, new_thread_stack, (sizeof (void) * MAX_STACK_SIZE), NULL, arg_count);
+
+        threadID = mctx_create(new_thread, sf_addr, sf_arg, new_thread_stack, (sizeof (void) * MAX_STACK_SIZE));
         if (!container)
             container = malloc(sizeof (th_container_t));
 
@@ -334,6 +353,9 @@ int create_thread(void (*sf_addr)(), void *sf_arg, int arg_count, PB_priority pr
             container->container = list_create(new_thread);
         } else
             list_add_last(container->container, new_thread);
+
+        new_thread->initPriority = PB_array[threadID -1];
+        new_thread->priority = PB_array[threadID -1];
         threads_stats_t_p stats = malloc(sizeof (threads_stats_t));
         ASSERT(stats);
         

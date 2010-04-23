@@ -49,7 +49,7 @@ void create_ui_thread(void* ui_func) {
     mctx_t_p new_thread = malloc(sizeof (mctx_t));
     memset(new_thread, 0, sizeof (mctx_t));
     // new_thread->threadStack = new_thread_stack;
-    mctx_create(new_thread, ui_func, NULL, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE), NULL, 0);
+    mctx_create(new_thread, ui_func, NULL, new_thread_stack, (sizeof (char) * MAX_STACK_SIZE));
     next_id--;
     ui_thread = new_thread;
     return;
@@ -160,7 +160,7 @@ void ui() {
             }
 
         } else if (strcmp(command, "exit") == 0) {//========================EXIT===================================
-            break;
+            return;
         } else if (strcmp(command, "MSW") == 0) {//=========================MSW===================================
             int res = maximal_switch_wait();
             printf("%d\n", res);
@@ -224,12 +224,17 @@ void ui() {
             int threadIndex = 0;
             for (threadIndex = 0; threadIndex < threadsAmount; threadIndex++) {
                 if (*runType == PB || *runType == YD) {
-                    if (create_thread(runThread, 0, 0, PB_array[threadIndex]) == -1) {
+                    if (create_thread(runThread, 0) == -1) {
                         exit(67);
                     }
                 } else {
-                    if (create_thread(runThread, 0, 0, 0) == -1)
-                        exit(67);
+
+                int i = 0;
+                for (i; i < threadsAmount; i++) {
+                    PB_array[i] = 0;
+                }
+                if (create_thread(runThread, 0) == -1)
+                    exit(67);
                 }
 
             }
