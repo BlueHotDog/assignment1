@@ -23,7 +23,7 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
         //reading jobs count=========================
         *jobsCount = readJobsAmount(oneLine);
         //initializing Jobs dataStracture
-        *jobs = calloc(*jobsCount, sizeof (JobState));
+        if(!*jobs) *jobs = calloc(*jobsCount, sizeof (JobState));
 
         for (i=0; i < *jobsCount; i++)
             (*jobs)[i] = NotStarted;
@@ -31,7 +31,7 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
         //initializing jobDeps DataStracture=========
         *jobDeps = calloc(*jobsCount, sizeof (boolean*));
         for (i = 0; i < *jobsCount; i++) {
-            (*jobDeps)[i] = calloc(*jobsCount, sizeof (boolean));
+            if(!(*jobDeps)[i]) (*jobDeps)[i] = calloc(*jobsCount, sizeof (boolean));
             for (j = 0; j<*jobsCount; j++)
                 (*jobDeps)[i][j] = false;
 
@@ -53,7 +53,7 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
         }
         //===========================================
         //Initializing Jobs for thread stracture=====
-        *jobsForThreads = calloc(*threadCount, sizeof (ThreadJobs));
+        if(!*jobsForThreads) *jobsForThreads = calloc(*threadCount, sizeof (ThreadJobs));
         for (i = 0; i<*threadCount; i++) {
             GET_NEXT_LINE(oneLine, hFile);
             if (*oneLine != 0) {
@@ -61,16 +61,17 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
                 char* currChar = oneLine;
                 while (*currChar == ' ' || *currChar == '\t')
                     currChar++;
-                sscanf(currChar, "%d:", &currentThread);
-                (*jobsForThreads)[currentThread - 1].jobs = calloc(*jobsCount, sizeof (int));
+                sscanf(currChar, "%d:%s", &currentThread,currChar);
+                if(!(*jobsForThreads)[currentThread - 1].jobs) (*jobsForThreads)[currentThread - 1].jobs = calloc(*jobsCount, sizeof (int));
                 (*jobsForThreads)[currentThread - 1].threadID = currentThread;
 
-                currChar = currChar + 2;
+                //currChar = currChar + 2;
                 while (*currChar != '\r' && *currChar != '\n') {
                     while (*currChar == ' ' || *currChar == '\t' || *currChar == '\0')
                         currChar++;
                     if (*currChar != '\n' && *currChar != '\r') {
-                        sscanf(currChar, "%d,", &currentJob);
+                        if(sscanf(currChar, "%d,", &currentJob)==0)
+                            sscanf(currChar, "%d", &currentJob);
                         while (*currChar != '\r' && *currChar != '\n' && *currChar != ',')
                             currChar++;
                         if (*currChar == ',')

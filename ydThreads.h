@@ -34,7 +34,6 @@ typedef struct mctx_st {
     int priority;
     int initPriority;
     ucontext_t uc;
-    void* threadStack;
     tID id;
 } mctx_t, *mctx_t_p;
 
@@ -86,8 +85,8 @@ PB_priority_array PB_array;
 /* create machine context which can later be used to save & restore threads
  * Returns:new thread ID or -1 if error
  */
-tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func, int arg_count);
-//TODO:removes a thread from the list and memory
+tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size);
+
 op_status delete_thread(const tID threadID);
 /* This function receives as arguments a pointer to the thread’s main function and a pointer to
  * its argument list. The function should allocate the thread and prepare it but not run it. Once
@@ -96,7 +95,7 @@ op_status delete_thread(const tID threadID);
  * thread
  * RETURNS: OP_CODE or new thread ID
  */
-int create_thread(void (*sf_addr)(), void *sf_arg, int arg_count, PB_priority priority);
+int create_thread(void (*sf_addr)(), void *sf_arg);
 
 /* This function saves the current thread’s context and resumes the manager (restores the
  * manager’s context). The argument pInfo is related to the requested priority upon yielding
@@ -187,6 +186,6 @@ th_container_t_p container;
 /* Flag indicating that the current_thread has completed. */
 static volatile state_t state;
 
-void reset_iterator();
+void reset_iterator(int num);
 #endif	/* _YD_THREADS_H */
 
