@@ -64,7 +64,6 @@ mctx_t_p scheduler_pb() {
     else {
         offset = container->lastTunThreadID;
         ASSERT_PRINT("offset is: %d\n", offset);
-
         ASSERT(offset >=0);
     }
     thread_to_return = search_for_highest_priority_thread(offset);
@@ -74,7 +73,113 @@ mctx_t_p scheduler_pb() {
 }
 
 mctx_t_p scheduler_yd() {
+    mctx_t_p thread_to_return;
+    if(container->lastTunThreadID == NULL_TID){
+        node_t_p node = list_at(container->container, 0);
+        thread_to_return = node->data;
+        container->lastTunThreadID = thread_to_return->id;
+        return thread_to_return;
+    }
 
+    if(jobs[container->lastTunThreadID -1] == Done) { //current_thread execute its job so choosing one of its child
+        tID* children = find_all_children(container->lastTunThreadID);
+        thread_to_return = find_highest_priority_thread_by_id(children);
+        if(thread_to_return != NULL_THREAD) {
+            container->lastTunThreadID = thread_to_return->id;
+            return thread_to_return;
+        }
+        else {  // thread_to_return is NULL_THREAD i.e: there this thread don't have parents.
+            thread_to_return = get_by_rr_with_offset_next_thread(container->lastTunThreadID);
+            container->lastTunThreadID = thread_to_return->id;
+            return thread_to_return;
+        }
+    }
+    else { //current thread did NOT execute a job - choosing one if its parents.
+        tID* parents = find_all_parents(container->lastTunThreadID);
+        thread_to_return = find_highest_priority_thread_by_id(parents);
+        if (thread_to_return != NULL_THREAD) {
+            container->lastTunThreadID = thread_to_return->id;
+            return thread_to_return;
+        }
+        else { // thread_to_return is NULL_THREAD i.e: there this thread don't have parents.
+            thread_to_return = get_by_rr_with_offset_next_thread(container->lastTunThreadID);
+            container->lastTunThreadID = thread_to_return->id;
+            return thread_to_return;
+        }
+    }
+}
+
+mctx_t_p get_by_rr_with_offset_next_thread(tID threadID) {
+    int offset = threadID -1;
+    node_t_p node = list_at(container->container, (offset +1) % threadsAmount);
+    return (mctx_t_p) node->data;
+}
+
+tID* find_all_parents(tID threadID) {
+    tID* result_array = calloc(threadsAmount +1, sizeof(tID));
+    int row;
+    int array_index = 0;
+    int column = threadID -1;
+    for(row=0; row<jobsAmount; row++) {
+        if(deps[row][column] && jobs[row +1] != Done) {
+            result_array[array_index] = row +1;
+            array_index ++;
+        }
+    }
+    result_array[array_index] = NULL_TID;
+    return result_array;
+}
+
+tID* find_all_children(tID threadID) {
+    tID* result_array = calloc(threadsAmount +1, sizeof(tID));
+    int row = threadID -1;
+    int array_index = 0;
+    int column;
+    for(column=0; column<jobsAmount; column++) {
+        if(deps[row][column]  && jobs[column +1] != Done) {
+            result_array[array_index] = column +1;
+            array_index ++;
+        }
+    }
+    result_array[array_index] = NULL_TID;
+    return result_array;
+}
+
+mctx_t_p find_highest_priority_thread_by_id(tID* children) {
+    int i=0;
+    PB_priority max_priority = MIN_PRIORITY-1;
+    mctx_t_p thread_to_return = NULL_THREAD;
+    for(i; children[i] != NULL_TID; i++) {
+        tID threadID = children[i];
+        node_t* node = container->container;
+        mctx_t_p tested_thread = NULL;
+        while (node) {
+            tested_thread = (mctx_t_p) node->data;
+            if (tested_thread->id == threadID)
+                break;
+            node = node->next;
+        }
+        if(!node) {
+            int i=0;
+            for(i; children[i] != NULL_TID; i++) {
+                 printf("%d ", children[i]);
+            }
+            printf("\nid's in the system: ");
+            node_t* node = container->container;
+            while (node) {
+                tested_thread = (mctx_t_p) node->data;
+                printf("%d ", tested_thread->id);
+                node = node->next;
+            }
+            exit (4);
+        }
+        ASSERT(node != NULL);
+        if(tested_thread->priority > max_priority && jobs[tested_thread->id -1]) {
+            max_priority = tested_thread->priority;
+            thread_to_return = tested_thread;
+        }
+    }
+    return thread_to_return;
 }
 
 mctx_t_p search_for_highest_priority_thread(int offset) {
@@ -162,6 +267,7 @@ void thread_manager_init(void* arg, ucontext_t* ret_thread,int arg_count) {
         if (!container) {
             container = malloc(sizeof (th_container_t));
             memset(container, 0, sizeof (th_container_t));
+            container->lastTunThreadID = NULL_TID;
         }
     } else
         ASSERT_PRINT("manager thread already initialized\n");

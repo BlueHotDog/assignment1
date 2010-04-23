@@ -147,10 +147,29 @@ int total_jobs_wait();
 float avarage_switch_wait();
 int total_switch_wait();
 
+/* get the next thread by round robin algorithm.
+ * the procidure will return the next thread by the given offset */
+mctx_t_p get_by_rr_with_offset_next_thread(tID lastRunThreadID);
+
 op_status delete_statistics();
+
 mctx_t_p search_for_highest_priority_thread(int offset);
 /* global manager and current thread*/
+
+/* return all threads that have a job with higher priority on the graph (parent)
+ *  and NULL_TID in the end of the array */
+tID* find_all_parents(tID lastRunThreadID);
+
+/* return all threads that have a job with lower priority on the graph (child)
+ *  and NULL_TID in the end of the array */
+tID* find_all_children(tID lastRunThreadID);
+
+/* get list of ids and retrun the thread with the highest priority */
+mctx_t_p find_highest_priority_thread_by_id(tID* children);
+
+/* global manager and current thread*/
 mctx_t_p manager_thread, current_thread;
+
 /* the thread container holds all thread in a list data type*/
 th_container_t_p container;
 

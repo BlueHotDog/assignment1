@@ -98,7 +98,7 @@ void ui() {
     string parameter = malloc(MAX_INPUT_LENGTH);
     memset(command, 0, MAX_INPUT_LENGTH);
     memset(parameter, 0, MAX_INPUT_LENGTH);
-    ASSERT_RUN(readFile("/home/yanivdu/Desktop/OS-Assignment-1/file.txt", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount));
+    readFile("/home/yanivdu/Desktop/OS-Assignment-1/file.txt", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
     ASSERT_RUN(printData());
 
     while (strcmp(command, "exit") != 0) {
@@ -150,6 +150,7 @@ void ui() {
             int total = total_switch_wait();
             printf("%d\n", total);
         } else if (strcmp(command, "run") == 0) {
+            PB_array = calloc(threadsAmount, sizeof(PB_priority));
             runType = malloc(sizeof(run_t));
             ASSERT(container && deps && jobs && jobsForThreads && threadsAmount);
             read_from_file_thread_amount = threadsAmount;
@@ -160,7 +161,6 @@ void ui() {
             scanf("%s", sub_command);
             if(strcmp(sub_command, "PB") == 0 ||strcmp(sub_command, "Pb") == 0 || strcmp(sub_command, "pb") == 0) {
                 *runType = PB;
-                PB_array = calloc(threadsAmount, sizeof(PB_priority));
                 int i=1;
                 scanf("%s", sub_command);
                 PB_array[0] = atoi(sub_command);
@@ -179,9 +179,19 @@ void ui() {
                 ASSERT_PRINT("\n");
                 free(sub_command);
             }
+            else if(strcmp(sub_command, "3") == 0) {
+                *runType = YD;
+                int i=0;
+                for(i; i<threadsAmount; i++) {
+                    PB_array[i] = 100;
+                }
+            }
             else {
                 *runType = RR;
-                memset(PB_array, 0, threadsAmount);
+                int i=0;
+                for(i; i<threadsAmount; i++) {
+                    PB_array[i] = 0;
+                }
             }
             int threadIndex = 0;
             for (threadIndex = 0; threadIndex < threadsAmount; threadIndex++) {
