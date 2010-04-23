@@ -178,8 +178,6 @@ void ui() {
         } else if (strcmp(command, "run") == 0) {
             if(container->stats)
                  delete_statistics();
-
-            PB_array = calloc(threadsAmount, sizeof (PB_priority));
             runType = malloc(sizeof (run_t));
             PB_array = calloc(threadsAmount, sizeof (PB_priority));
             ASSERT(container && deps && jobs && jobsForThreads && threadsAmount);

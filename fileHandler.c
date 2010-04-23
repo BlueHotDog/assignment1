@@ -61,16 +61,17 @@ op_status readFile(string file_name, JobsDeps* jobDeps, Jobs* jobs, JobsForThrea
                 char* currChar = oneLine;
                 while (*currChar == ' ' || *currChar == '\t')
                     currChar++;
-                sscanf(currChar, "%d:", &currentThread);
+                sscanf(currChar, "%d:%s", &currentThread,currChar);
                 if(!(*jobsForThreads)[currentThread - 1].jobs) (*jobsForThreads)[currentThread - 1].jobs = calloc(*jobsCount, sizeof (int));
                 (*jobsForThreads)[currentThread - 1].threadID = currentThread;
 
-                currChar = currChar + 2;
+                //currChar = currChar + 2;
                 while (*currChar != '\r' && *currChar != '\n') {
                     while (*currChar == ' ' || *currChar == '\t' || *currChar == '\0')
                         currChar++;
                     if (*currChar != '\n' && *currChar != '\r') {
-                        sscanf(currChar, "%d,", &currentJob);
+                        if(sscanf(currChar, "%d,", &currentJob)==0)
+                            sscanf(currChar, "%d", &currentJob);
                         while (*currChar != '\r' && *currChar != '\n' && *currChar != ',')
                             currChar++;
                         if (*currChar == ',')
