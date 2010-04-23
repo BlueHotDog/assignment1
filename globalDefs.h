@@ -34,7 +34,7 @@ typedef char* string;
 #define OUT
 #define IN
 
-//#define DEBUG
+#define DEBUG
 
 //DEBUGGING
 # define __ASSERT_VOID_CAST (void)

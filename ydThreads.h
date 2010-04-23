@@ -48,7 +48,8 @@ typedef struct threads_stats {
 } threads_stats_t, *threads_stats_t_p;
 
 typedef struct th_container_s {
-    tID lastTunThreadID;
+    tID lastRunThreadID;
+    int indexOfLastThreadInContainer;
     node_t_p container;
     node_t_p stats;
 } th_container_t, *th_container_t_p;
@@ -138,7 +139,7 @@ tID current_thread_id();
 tID id_itarator();
 
 //searches the thread container for the specified thread id
-void get_thread_byID(OUT mctx_t_p result, const tID threadID);
+mctx_t_p get_thread_byID(const tID threadID);
 threads_stats_t_p get_thread_stats_byID(const IN tID threadID);
 //prints thread info
 void containerToString(const th_container_t_p const threadContainer);
@@ -173,6 +174,9 @@ tID* find_all_children(tID lastRunThreadID);
 
 /* get list of ids and retrun the thread with the highest priority */
 mctx_t_p find_highest_priority_thread_by_id(tID* children);
+
+/* return the thread index in the container list */
+int thread_index_in_list(tID threadID);
 
 /* global manager and current thread*/
 mctx_t_p manager_thread, current_thread;

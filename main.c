@@ -207,8 +207,8 @@ void ui() {
                 scanf("%s", sub_command);
                 PB_array[0] = atoi(sub_command);
                 if (strcmp(sub_command, "-1") == 0)
-                    for (i = 1; i < threadsAmount; i++) {
-                        PB_array[i] = i + 1; //because there is an one offset between the thread index and thread's id
+                    for (i = 0; i < threadsAmount; i++) {
+                        PB_array[i] = i +1; //because there is an one offset between the thread index and thread's id
                     } else for (i; i < threadsAmount; i++) {
                         scanf("%s", sub_command);
                         PB_array[i] = atoi(sub_command);
