@@ -18,6 +18,12 @@ typedef enum state_e {
     TERM_THREAD,
 } state_t;
 
+typedef enum thread_stats_e {
+    UNBORN_THREAD,
+    ALIVE_THREAD,
+    DEAD_THREAD
+} thread_stats_t;
+
 typedef enum run_e {
     RR = 1,
     PB = 2,
@@ -38,6 +44,7 @@ typedef struct threads_stats {
     int max_jobs_wait;
     int curr_jobs_wait;
     tID id;
+    thread_stats_t thread_state;
 } threads_stats_t, *threads_stats_t_p;
 
 typedef struct th_container_s {
@@ -78,7 +85,7 @@ PB_priority_array PB_array;
 /* create machine context which can later be used to save & restore threads
  * Returns:new thread ID or -1 if error
  */
-tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func,int arg_count);
+tID mctx_create(mctx_t_p const mctx, void (*sf_addr)(), const void *sf_arg, void *sk_addr, const size_t sk_size, ucontext_t* ret_func, int arg_count);
 //TODO:removes a thread from the list and memory
 op_status delete_thread(const tID threadID);
 /* This function receives as arguments a pointer to the thread’s main function and a pointer to
@@ -88,7 +95,7 @@ op_status delete_thread(const tID threadID);
  * thread
  * RETURNS: OP_CODE or new thread ID
  */
-int create_thread(void (*sf_addr)(), void *sf_arg,int arg_count, PB_priority priority);
+int create_thread(void (*sf_addr)(), void *sf_arg, int arg_count, PB_priority priority);
 
 /* This function saves the current thread’s context and resumes the manager (restores the
  * manager’s context). The argument pInfo is related to the requested priority upon yielding
@@ -102,7 +109,7 @@ void thread_yield(int pInfo, int statInfo, boolean worked);
 void thread_term();
 
 /* Initializes the manager and the thread container data structure */
-void thread_manager_init(void* arg, ucontext_t* ret_func,int arg_count);
+void thread_manager_init(void* arg, ucontext_t* ret_func, int arg_count);
 
 /* This function starts the user space threads. All it does is simply let the manager run
  * (restores the manager’s context) */

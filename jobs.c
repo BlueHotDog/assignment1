@@ -41,7 +41,7 @@ tID getJobForThread(tID threadId) {
 op_status execJob(tID jobId) {
     ASSERT(jobs);
     jobs[jobId] = InProgress;
-    printf("Thread %d performed job %d\n", jobsForThreads[current_thread->id - 1].threadID - 1, jobId);
+    printf("Thread %d performed job %d\n", current_thread->id, jobId);
     jobs[jobId] = Done;
 }
 
