@@ -60,7 +60,7 @@ mctx_t_p scheduler_rr() {
 mctx_t_p scheduler_pb() {
     mctx_t_p thread_to_return;
     int offset;
-    if (container->lastTunThreadID > NULL_TID) {
+    if (container->lastTunThreadID == NULL_TID) {
         offset = 0;
     } else {
         offset = container->lastTunThreadID;
@@ -524,8 +524,8 @@ void increase_jobs_wait_for_all_except(tID threadID, int amount) {
     }
 }
 
-void reset_iterator() {
-    next_id = 0;
+void reset_iterator(int num) {
+    next_id = num;
 }
 
 op_status delete_statistics() {

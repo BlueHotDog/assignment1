@@ -9,35 +9,9 @@
 #include "fileHandler.h"
 #include "jobs.h"
 static int read_from_file_thread_amount = -1;
-
-void a() {
-    int i = 0;
-    for (i = 0; i < 2; i++) {
-        printf("Thread %d\n", current_thread->id);
-        thread_yield(0, 0, false);
-    }
-    thread_term();
-}
-
-void b() {
-
-    int i = 0;
-    for (i = 0; i < 1; i++) {
-        printf("Thread %d\n", current_thread->id);
-        thread_yield(0, 0, false);
-    }
-    thread_term();
-}
-
-void c() {
-
-    int i = 0;
-    for (i = 0; i < 1; i++) {
-        printf("Thread %d\n", current_thread->id);
-        thread_yield(0, 0, false);
-    }
-    thread_term();
-}
+static string fileName;
+static string command;
+static boolean fileOpened = false;
 
 void runThread() {
     int jobsDone = 0;
@@ -65,7 +39,7 @@ void runThread() {
     printf("Thread %d performed all jobs\n", current_thread->id);
     thread_term();
 }
-mctx_t_p ui_thread;
+static mctx_t_p ui_thread;
 
 void create_ui_thread(void* ui_func) {
     void* new_thread_stack = calloc(MAX_STACK_SIZE, sizeof (void));
@@ -89,14 +63,14 @@ void clear_ui_thread() {
 
 void clear_container() {
     ASSERT(container);
-    free(container);
+    if(container) free(container);
     container = NULL;
 }
 
 void clear_manager_thread() {
     ASSERT(manager_thread);
-    free(manager_thread->uc.uc_stack.ss_sp);
-    free(manager_thread);
+    if (manager_thread) free(manager_thread->uc.uc_stack.ss_sp);
+    if (manager_thread) free(manager_thread);
     manager_thread = NULL;
 }
 
@@ -134,16 +108,17 @@ void init_jobs_array() {
 }
 
 void ui() {
-    string command = malloc(MAX_INPUT_LENGTH);
+
     string parameter = malloc(MAX_INPUT_LENGTH);
+    command = malloc(MAX_INPUT_LENGTH);
+    string sub_command = NULL;
     memset(command, 0, MAX_INPUT_LENGTH);
     memset(parameter, 0, MAX_INPUT_LENGTH);
 
-    readFile("/home/danni/test", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
+    //readFile("/home/danni/test", &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
     read_from_file_thread_amount = threadsAmount;
 
     ASSERT_RUN(printData());
-
     while (strcmp(command, "exit") != 0) {
         printf(">");
         scanf("%s", command);
@@ -158,8 +133,15 @@ void ui() {
                 else
                     printf("Unable to find thread\n");
             } else if (strcmp(command, "load") == 0) {//============================LOAD===================================
-                if (readFile(parameter, &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount) != OP_SUCCESS) {
+                if(fileName) free(fileName);
+                fileName = strdup(parameter);
+                
+                if(fileOpened==true)
+                    free_file_info();
+                fileOpened = true;
+                if (readFile(fileName, &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount) != OP_SUCCESS) {
                     printf("ERROR readFile function did not return OS_SUCCESS (file name was:%s)\n", parameter);
+                    fileOpened = false;
                 }
                 read_from_file_thread_amount = threadsAmount;
                 ASSERT_RUN(printData());
@@ -174,7 +156,7 @@ void ui() {
             }
 
         } else if (strcmp(command, "exit") == 0) {//========================EXIT===================================
-            break;
+            return;
         } else if (strcmp(command, "MSW") == 0) {//=========================MSW===================================
             int res = maximal_switch_wait();
             printf("%d\n", res);
@@ -194,19 +176,21 @@ void ui() {
             int total = total_switch_wait();
             printf("%d\n", total);
         } else if (strcmp(command, "run") == 0) {
+            if(container->stats)
+                 delete_statistics();
             runType = malloc(sizeof (run_t));
             PB_array = calloc(threadsAmount, sizeof (PB_priority));
             ASSERT(container && deps && jobs && jobsForThreads && threadsAmount);
-            
+
             string sub_command = malloc(MAX_INPUT_LENGTH);
             memset(sub_command, 0, MAX_INPUT_LENGTH);
             scanf("%s", sub_command);
             if (strcmp(sub_command, "PB") == 0 || strcmp(sub_command, "pb") == 0 || strcmp(sub_command, "2") == 0) {
                 *runType = PB;
-				
-                
+
+
                 int i = 1;
-				
+
                 scanf("%s", sub_command);
                 PB_array[0] = atoi(sub_command);
                 if (strcmp(sub_command, "-1") == 0)
@@ -223,23 +207,22 @@ void ui() {
                 ASSERT_PRINT("\n");
             } else if (strcmp(sub_command, "-1") == 0) {
                 *runType = RR;
-            } else if(strcmp(sub_command, "3") == 0) {
+            } else if (strcmp(sub_command, "3") == 0) {
                 *runType = YD;
-                int i=0;
-                for(i; i<threadsAmount; i++) {
+                int i = 0;
+                for (i; i < threadsAmount; i++) {
                     PB_array[i] = 100;
                 }
-            }
-            else {
+            } else {
                 *runType = RR;
-                int i=0;
-                for(i; i<threadsAmount; i++) {
+                int i = 0;
+                for (i; i < threadsAmount; i++) {
                     PB_array[i] = 0;
                 }
             }
             int threadIndex = 0;
             for (threadIndex = 0; threadIndex < threadsAmount; threadIndex++) {
-                if (*runType == PB || *runType==YD) {
+                if (*runType == PB || *runType == YD) {
                     if (create_thread(runThread, 0, 0, PB_array[threadIndex]) == -1) {
                         exit(67);
                     }
@@ -249,18 +232,12 @@ void ui() {
                 }
 
             }
+
+            thread_manager_init(0, &(ui_thread->uc), 0);
             threads_start_with_ui(ui_thread);
 
             //CLEAN UP
-            if (sub_command) {
-                free(sub_command);
-                sub_command = NULL;
-            }
-            if (jobs)
-                init_jobs_array(); //if we're on our second run
-            threadsAmount = read_from_file_thread_amount;
 
-            delete_statistics();
 
             /*
                         if (container->stats)
@@ -272,38 +249,49 @@ void ui() {
 
             //list_clear_all_threads(container->container);
 
-/*
-            if (container->container) {
+            /*
+                        if (container->container) {
 
-                if (container->container) {
-                    free(container->container);
-                    container->container = NULL;
-                    if (container)
-                        clear_container();
-                }
-            }
-*/
+                            if (container->container) {
+                                free(container->container);
+                                container->container = NULL;
+                                if (container)
+                                    clear_container();
+                            }
+                        }
+             */
 
-            free_pb();
-            if (runType) {
-                free(runType);
-                runType = NULL;
-            }
-            reset_iterator();
-            id_iterator();
+        readFile(fileName, &deps, &jobs, &jobsForThreads, &threadsAmount, &jobsAmount);
+        reset_iterator(1);
+        threadsAmount = read_from_file_thread_amount;
+        list_clear_all_threads(container->container);
+        //free_file_info();
+        //clear_container();
+        current_thread = NULL;
+
+        if (runType) free(runType);
+        runType = NULL;
+        if (sub_command) {
+            free(sub_command);
+            sub_command = NULL;
         }
-    }
+        clear_manager_thread();
+        }
+       // if(fileOpened)
+        //    free_file_info();
+        
 
-    if (runType) free(runType);
-    free(command);
-    free(parameter);
+    }
+    if (parameter) free(parameter);
+    parameter = NULL;
     free_memory();
 }
 
 int main() {
     //runTests();
+
     create_ui_thread(ui);
-    reset_iterator();
+    reset_iterator(0);
     thread_manager_init(0, &(ui_thread->uc), 0);
     MCTX_RESTORE(ui_thread);
     return 0;

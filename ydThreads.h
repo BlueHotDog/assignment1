@@ -34,7 +34,6 @@ typedef struct mctx_st {
     int priority;
     int initPriority;
     ucontext_t uc;
-    void* threadStack;
     tID id;
 } mctx_t, *mctx_t_p;
 
@@ -183,6 +182,6 @@ th_container_t_p container;
 /* Flag indicating that the current_thread has completed. */
 static volatile state_t state;
 
-void reset_iterator();
+void reset_iterator(int num);
 #endif	/* _YD_THREADS_H */
 
